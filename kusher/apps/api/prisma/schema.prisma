@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+ }
+
+enum QuitGoal {
+  QUIT_NOW
+  REDUCE_GRADUALLY
+}
+
+enum QuitPlanType {
+  COLD_TURKEY
+  GRADUAL
+}
+
+enum CravingOutcome {
+  RESISTED
+  SMOKED
+  UNRESOLVED
+}
+
+model User {
+  id                      String                   @id @default(uuid())
+  email                   String                   @unique
+  passwordHash            String
+  firstName               String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  lastLoginAt             DateTime?
+
+  profile                 Profile?
+  userTriggers            UserTrigger[]
+  quitReasons             QuitReason[]
+  quitPlans               QuitPlan[]
+  cravingLogs             CravingLog[]
+  smokingLogs             SmokingLog[]
+  supportContacts         SupportContact[]
+  notificationPreference  NotificationPreference?
+}
+
+model Profile {
+  id                String     @id @default(uuid())
+  userId            String     @unique
+  cigarettesPerDay  Int
+  yearsSmoking      Int?
+  packCost          Decimal?   @db.Decimal(10, 2)
+  quitGoal          QuitGoal
+  quitDate          DateTime?
+  timezone          String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Trigger {
+  id                String        @id @default(uuid())
+  name              String        @unique
+  createdAt         DateTime      @default(now())
+
+  userTriggers      UserTrigger[]
+  cravingLogs       CravingLog[]
+  smokingLogs       SmokingLog[]
+}
+
+model UserTrigger {
+  id                String      @id @default(uuid())
+  userId            String
+  triggerId         String
+  createdAt         DateTime    @default(now())
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger           Trigger     @relation(fields: [triggerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, triggerId])
+  @@index([userId])
+  @@index([triggerId])
+}
+
+model QuitReason {
+  id                String      @id @default(uuid())
+  userId            String
+  reason            String
+  createdAt         DateTime    @default(now())
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model QuitPlan {
+  id                String          @id @default(uuid())
+  userId            String
+  type              QuitPlanType
+  startDate         DateTime
+  quitDate          DateTime?
+  active            Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps             QuitPlanStep[]
+
+  @@index([userId])
+  @@index([userId, active])
+}
+
+model QuitPlanStep {
+  id                        String      @id @default(uuid())
+  quitPlanId                String
+  weekNumber                Int
+  targetCigarettesPerDay    Int
+  startDate                 DateTime
+  endDate                   DateTime
+
+  quitPlan                  QuitPlan    @relation(fields: [quitPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([quitPlanId, weekNumber])
+  @@index([quitPlanId])
+}
+
+model CravingLog {
+  id                String           @id @default(uuid())
+  userId            String
+  intensity         Int
+  mood              String?
+  triggerId         String?
+  outcome           CravingOutcome
+  note              String?
+  loggedAt          DateTime
+  createdAt         DateTime         @default(now())
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger           Trigger?         @relation(fields: [triggerId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([triggerId])
+  @@index([loggedAt])
+  @@index([userId, loggedAt])
+}
+
+model SmokingLog {
+  id                String      @id @default(uuid())
+  userId            String
+  quantity          Int         @default(1)
+  mood              String?
+  triggerId         String?
+  note              String?
+  loggedAt          DateTime
+  createdAt         DateTime    @default(now())
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger           Trigger?    @relation(fields: [triggerId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([triggerId])
+  @@index([loggedAt])
+  @@index([userId, loggedAt])
+}
+
+model SupportContact {
+  id                String      @id @default(uuid())
+  userId            String
+  name              String
+  phone             String?
+  email             String?
+  relationship      String?
+  createdAt         DateTime    @default(now())
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model NotificationPreference {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  morningReminder       Boolean   @default(true)
+  triggerWindowReminder Boolean   @default(true)
+  streakUpdates         Boolean   @default(true)
+  milestoneAlerts       Boolean   @default(true)
+  missedLogReminders    Boolean   @default(true)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

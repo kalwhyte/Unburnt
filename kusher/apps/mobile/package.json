@@ -1,0 +1,49 @@
+{
+  "name": "chimney",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A smoker relief and abstaining app",
+  "keywords": [
+    "Whyte"
+  ],
+  "homepage": "https://github.com/kalwhyte/unburnt#readme",
+  "bugs": {
+    "url": "https://github.com/kalwhyte/unburnt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kalwhyte/unburnt.git"
+  },
+  "license": "MIT",
+  "author": "Ejiofor Emmanuel Whyte",
+  "type": "commonjs",
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "^55.0.8",
+    "expo-constants": "^55.0.9",
+    "expo-linking": "^55.0.8",
+    "expo-router": "^55.0.7",
+    "expo-status-bar": "^55.0.4",
+    "react": "^19.2.4",
+    "react-dom": "19.2.4",
+    "react-native": "^0.84.1",
+    "react-native-reanimated": "~3.9.0",
+    "react-native-safe-area-context": "^5.7.0",
+    "react-native-screens": "^4.24.0",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.28.5",
+    "@types/react": "~19.2.10",
+    "@types/react-native": "^0.72.8",
+    "typescript": "~5.9.2"
+  }
+}
