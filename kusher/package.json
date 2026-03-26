@@ -1,7 +1,7 @@
 {
   "name": "laststick",
   "private": true,
-  "packageManager": "pnpm@10",
+  "packageManager": "",  
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
