@@ -1,11 +1,31 @@
 node_modules
+/dist
 .pnpm-store
+/node_modules
 dist
+/build
 build
+/tmp
 .expo
 .next
+# Logs
 coverage
-.env
-.env.local
-.DS_Store
+logs
 *.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+# dotenv environment variable files
+.env
+.env
+.env.development
+.env.local
+.env.test
+.DS_Store
+.env.production
+*.log
+# temp directory
+.temp
+.tmp
