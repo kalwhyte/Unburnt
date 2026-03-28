@@ -120,13 +120,15 @@ export class OnboardingService {
 
   async getProgress(userId: string) {
     const profile = await this.prisma.profile.findUnique({ where: { userId } });
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const hasActivaPlan = await this.prisma.quitPlan.findFirst({ where: { userId, endDate: null } });
+
+    // const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
     return {
-      isOnboarded: !!profile?.bio, // Use bio presence as a proxy for completion
+      isOnboarded: !!hasActivaPlan,
       steps: {
-        personal:   !!(profile?.age !== undefined && profile?.gender && profile?.timezone),
-        smoking:    !!(profile?.cigarettesPerDay !== undefined && profile?.yearsSmoking !== undefined),
+        personal:   !!(profile?.age && profile?.gender && profile?.timezone),
+        smoking:    !!(profile?.cigarettesPerDay && profile?.yearsSmoking),
         quit_goal:  !!profile?.quitGoal,
         motivation: !!profile?.bio,
       },

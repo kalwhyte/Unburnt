@@ -10,6 +10,7 @@ import jwtConfig from './config/jwt.config';
 import { envSchema } from './config/env.schema';
 import { LoggerModule } from './common/logger/logger.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
+import { SmokingLogsModule } from './modules/smoking-logs/smoking-logs.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module';
     UsersModule,
     ProfilesModule,
     OnboardingModule,
+    SmokingLogsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, databaseConfig, jwtConfig],
