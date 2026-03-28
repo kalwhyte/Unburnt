@@ -27,10 +27,13 @@ model User {
   email                   String                   @unique
   passwordHash            String
   firstName               String?
+  lastName                String?
+  avatarUrl               String?
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
   lastLoginAt             DateTime?
 
+  isOnboarded             Boolean                  @default(false)
   profile                 Profile?
   userTriggers            UserTrigger[]
   quitReasons             QuitReason[]
@@ -39,15 +42,19 @@ model User {
   smokingLogs             SmokingLog[]
   supportContacts         SupportContact[]
   notificationPreference  NotificationPreference?
+  notifications           Notification[]
 }
 
 model Profile {
   id                String     @id @default(uuid())
   userId            String     @unique
   cigarettesPerDay  Int
+  bio               String?
+  age               Int?
+  gender            String?
   yearsSmoking      Int?
   packCost          Decimal?   @db.Decimal(10, 2)
-  quitGoal          QuitGoal
+  quitGoal          QuitGoal?
   quitDate          DateTime?
   timezone          String?
   createdAt         DateTime   @default(now())
@@ -58,7 +65,7 @@ model Profile {
 
 model Trigger {
   id                String        @id @default(uuid())
-  name              String        @unique
+  name         String        @unique
   createdAt         DateTime      @default(now())
 
   userTriggers      UserTrigger[]
@@ -68,7 +75,7 @@ model Trigger {
 
 model UserTrigger {
   id                String      @id @default(uuid())
-  userId            String
+  userId            String      
   triggerId         String
   createdAt         DateTime    @default(now())
 
@@ -82,7 +89,7 @@ model UserTrigger {
 
 model QuitReason {
   id                String      @id @default(uuid())
-  userId            String
+  userId            String      
   reason            String
   createdAt         DateTime    @default(now())
 
@@ -93,7 +100,7 @@ model QuitReason {
 
 model QuitPlan {
   id                String          @id @default(uuid())
-  userId            String
+  userId            String          
   type              QuitPlanType
   startDate         DateTime
   quitDate          DateTime?
@@ -124,7 +131,7 @@ model QuitPlanStep {
 
 model CravingLog {
   id                String           @id @default(uuid())
-  userId            String
+  userId            String           
   intensity         Int
   mood              String?
   triggerId         String?
@@ -144,7 +151,7 @@ model CravingLog {
 
 model SmokingLog {
   id                String      @id @default(uuid())
-  userId            String
+  userId            String      
   quantity          Int         @default(1)
   mood              String?
   triggerId         String?
@@ -163,7 +170,7 @@ model SmokingLog {
 
 model SupportContact {
   id                String      @id @default(uuid())
-  userId            String
+  userId            String      
   name              String
   phone             String?
   email             String?
@@ -187,4 +194,18 @@ model NotificationPreference {
   updatedAt             DateTime  @updatedAt
 
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  title     String
+  body      String
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

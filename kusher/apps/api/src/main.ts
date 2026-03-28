@@ -60,6 +60,6 @@ async function bootstrap() {
   console.log('=======================================');
   console.log('\x1b[0m');
 
-  logger.log(`Application running on http://localhost:${port}`);
+  // logger.log(`Application running on http://localhost:${port}`);
 }
 bootstrap();
