@@ -11,6 +11,8 @@ import { envSchema } from './config/env.schema';
 import { LoggerModule } from './common/logger/logger.module';
 import { OnboardingModule } from './modules/onboarding/onboarding.module';
 import { SmokingLogsModule } from './modules/smoking-logs/smoking-logs.module';
+import { TriggersModule } from './modules/triggers/triggers.module';
+import { CravingsModule } from './modules/cravings/cravings.module';
 
 @Module({
   imports: [
@@ -19,6 +21,9 @@ import { SmokingLogsModule } from './modules/smoking-logs/smoking-logs.module';
     ProfilesModule,
     OnboardingModule,
     SmokingLogsModule,
+    TriggersModule,
+    CravingsModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, databaseConfig, jwtConfig],

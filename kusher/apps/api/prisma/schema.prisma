@@ -198,7 +198,7 @@ model NotificationPreference {
 
 model Notification {
   id        String   @id @default(uuid())
-  userId    String   @unique
+  userId    String
   title     String
   body      String
   type      String
