@@ -18,6 +18,7 @@ import { RelapseModule } from './modules/relapse/relapse.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SupportContactsModule } from './modules/support-contacts/support-contacts.module';
+import { InsightsModule } from './modules/insights/insights.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { SupportContactsModule } from './modules/support-contacts/support-contac
     RelapseModule,
     ProgressModule,
     NotificationsModule,
-    SupportContactsModule
+    SupportContactsModule,
+    InsightsModule
   ],
   controllers: [],
   providers: [],
