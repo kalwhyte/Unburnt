@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class OnboardingLoggingMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    if (!req.originalUrl.startsWith('/profiles')) return next();
+    if (!req.originalUrl.startsWith('/onboarding')) return next();
 
     const start = Date.now();
     res.on('finish', () => {
