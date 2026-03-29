@@ -14,6 +14,10 @@ import { SmokingLogsModule } from './modules/smoking-logs/smoking-logs.module';
 import { TriggersModule } from './modules/triggers/triggers.module';
 import { CravingsModule } from './modules/cravings/cravings.module';
 import { QuitPlansModule } from './modules/quit-plans/quit-plans.module';
+import { RelapseModule } from './modules/relapse/relapse.module';
+import { ProgressModule } from './modules/progress/progress.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SupportContactsModule } from './modules/support-contacts/support-contacts.module';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { QuitPlansModule } from './modules/quit-plans/quit-plans.module';
     TriggersModule,
     CravingsModule,
     QuitPlansModule,
+    RelapseModule,
+    ProgressModule,
+    NotificationsModule,
+    SupportContactsModule
   ],
   controllers: [],
   providers: [],
