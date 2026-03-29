@@ -26,10 +26,24 @@ export class CreateProfileDto {
   cigarettesPerDay?: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(0)
+  yearsSmoking?: number;
+
+  @IsOptional()
+  @IsNumber()
+  packCost?: number;
+
+  @IsOptional()
   @IsString()
   timezone?: string;
 
   @IsOptional()
   @IsString()
   quitGoal?: QuitGoal;
+
+  @IsOptional()
+  @IsDateString()
+  quitDate?: string;
+
 }
