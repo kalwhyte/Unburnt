@@ -1,0 +1,253 @@
+AUTH
+{
+  "email": "emmanuel@test.com",
+  "password": "Password123!",
+  "firstName": "Emmanuel",
+  "lastName": "Whyte"
+}
+```
+```
+POST {{base_url}}/auth/login
+
+{
+  "email": "emmanuel@test.com",
+  "password": "Password123!"
+}
+```
+
+---
+
+**USERS**
+```
+GET {{base_url}}/users
+GET {{base_url}}/users/:id
+```
+```
+PATCH {{base_url}}/users/:id
+
+{
+  "firstName": "Emmanuel",
+  "lastName": "Whyte",
+  "avatarUrl": "https://example.com/avatar.png"
+}
+```
+```
+DELETE {{base_url}}/users/:id
+```
+
+---
+
+**PROFILES**
+```
+GET {{base_url}}/profiles/me
+```
+```
+PUT {{base_url}}/profiles/update
+
+{
+  "cigarettesPerDay": 12,
+  "cigarettesPerPack": 20,
+  "packCost": 15.50,
+  "yearsSmoking": 5,
+  "timezone": "Europe/London"
+}
+```
+```
+PUT {{base_url}}/profiles/me/init
+
+{
+  "bio": "I want to run a marathon without getting winded.",
+  "age": 28,
+  "gender": "male",
+  "cigarettesPerDay": 12,
+  "cigarettesPerPack": 20,
+  "packCost": 15.50,
+  "yearsSmoking": 5,
+  "timezone": "Europe/London",
+  "quitGoal": "QUIT_NOW",
+  "quitDate": "2025-12-01T00:00:00.000Z"
+}
+```
+
+---
+
+**ONBOARDING**
+```
+GET {{base_url}}/onboarding/progress
+```
+```{
+  "age": 28,
+  "gender": "male",
+  "timezone": "Europe/London"
+}
+```
+```
+POST {{base_url}}/onboarding/step/smoking
+POST {{base_url}}/onboarding/step/personal
+
+{
+  "age": 28,
+  "gender": "male",
+  "timezone": "Europe/London"
+}
+```
+```
+POST {{base_url}}/onboarding/step/smoking
+
+{
+  "cigarettesPerDay": 12,
+  "yearsSmoking": 5,
+  "packCost": 15.50
+}
+```
+```
+POST {{base_url}}/onboarding/step/quit-goal
+
+{
+  "quitGoal": "QUIT_NOW",
+  "quitDate": "2026-06-01T00:00:00.000Z"
+}
+```
+```
+POST {{base_url}}/onboarding/step/motivation
+
+{
+  "bio": "I want to run a marathon without getting winded."
+}
+```
+
+---
+
+**TRIGGERS**
+```
+GET {{base_url}}/triggers
+GET {{base_url}}/triggers/me
+```
+```
+POST {{base_url}}/triggers
+
+{ "name": "Stress" }
+```
+```
+POST {{base_url}}/triggers/me
+
+{ "triggerId": "<uuid>" }
+```
+```
+DELETE {{base_url}}/triggers/me/:triggerId
+```
+
+---
+
+**SMOKING LOGS**
+```
+GET {{base_url}}/smoking-logs
+GET {{base_url}}/smoking-logs/:id
+GET {{base_url}}/smoking-logs/summary/daily
+GET {{base_url}}/smoking-logs/summary/weekly
+```
+```
+POST {{base_url}}/smoking-logs
+
+{
+  "quantity": 3,
+  "loggedAt": "2026-03-29T08:00:00.000Z",
+  "mood": "stressed",
+  "triggerId": "<uuid>",
+  "note": "after a meeting"
+}
+```
+```
+DELETE {{base_url}}/smoking-logs/:id
+```
+
+---
+
+**CRAVINGS**
+```
+GET {{base_url}}/cravings
+GET {{base_url}}/cravings/:id
+GET {{base_url}}/cravings/summary/outcomes
+GET {{base_url}}/cravings/summary/daily
+```
+```
+POST {{base_url}}/cravings
+
+{
+  "intensity": 7,
+  "outcome": "RESISTED",
+  "loggedAt": "2026-03-29T10:00:00.000Z",
+  "mood": "anxious",
+  "triggerId": "<uuid>",
+  "note": "took a walk instead"
+}
+```
+```
+DELETE {{base_url}}/cravings/:id
+```
+
+---
+
+**QUIT PLANS**
+```
+GET {{base_url}}/quit-plans
+GET {{base_url}}/quit-plans/active
+```
+```
+POST {{base_url}}/quit-plans
+
+{
+  "type": "GRADUAL",
+  "startDate": "2026-03-29T00:00:00.000Z",
+  "quitDate": "2026-04-29T00:00:00.000Z"
+}
+```
+```
+PATCH {{base_url}}/quit-plans/deactivate
+PATCH {{base_url}}/quit-plans/:planId/switch
+```
+```
+PATCH {{base_url}}/quit-plans/steps/:stepId
+
+{ "targetCigarettesPerDay": 3 }
+```
+
+---
+
+**RELAPSES**
+```
+GET {{base_url}}/relapses
+GET {{base_url}}/relapses/:id
+GET {{base_url}}/relapses/summary
+```
+```
+POST {{base_url}}/relapses
+
+{
+  "cigarettes": 3,
+  "occurredAt": "2026-03-29T14:00:00.000Z",
+  "triggerId": "<uuid>",
+  "note": "rough day, couldn't hold it"
+}
+```
+```
+DELETE {{base_url}}/relapses/:id
+```
+
+---
+
+**PROGRESS**
+```
+GET {{base_url}}/progress/dashboard
+GET {{base_url}}/progress/streak
+GET {{base_url}}/progress/money-saved
+GET {{base_url}}/progress/health-timeline
+GET {{base_url}}/progress/weekly-summary
+```
+
+---
+
+All routes except `POST /auth/register` and `POST /auth/login` require:
+```
+Authorization: Bearer {{token}}
+

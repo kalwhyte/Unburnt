@@ -37,6 +37,7 @@ model User {
   profile                 Profile?
   userTriggers            UserTrigger[]
   quitReasons             QuitReason[]
+  relapses                Relapse[]
   quitPlans               QuitPlan[]
   cravingLogs             CravingLog[]
   smokingLogs             SmokingLog[]
@@ -49,6 +50,7 @@ model Profile {
   id                String     @id @default(uuid())
   userId            String     @unique
   cigarettesPerDay  Int
+  cigarettesPerPack Int?       @default(20)
   bio               String?
   age               Int?
   gender            String?
@@ -65,12 +67,30 @@ model Profile {
 
 model Trigger {
   id                String        @id @default(uuid())
-  name         String        @unique
+  name              String        @unique
   createdAt         DateTime      @default(now())
 
   userTriggers      UserTrigger[]
   cravingLogs       CravingLog[]
   smokingLogs       SmokingLog[]
+  relapses          Relapse[]
+
+}
+
+model Relapse {
+  id                String      @id @default(uuid())
+  userId            String      
+  triggerId         String?
+  note              String?
+  cigarettes        Int       @default(1)
+  occurredAt        DateTime
+  createdAt         DateTime  @default(now())
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger           Trigger?  @relation(fields: [triggerId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, occurredAt])
 }
 
 model UserTrigger {
