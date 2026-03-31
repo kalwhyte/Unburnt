@@ -1,12 +1,18 @@
-module.exports = function(api) {
-  api.cache(true);
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: ['babel-preset-expo'],
+//     plugins: ['react-native-reanimated/plugin', 'nativewind/babel'],
+//   };
+// };
+
+module.exports = function (api) {
+  api.cache(true)
   return {
     presets: [
-      'babel-preset-expo',
-      '@babel/preset-typescript'
-    ],
-    plugins: [
-      'react-native-reanimated/plugin' // if using Reanimated
-    ],
-  };
-};
+      ['babel-preset-expo', {
+        unstable_transformImportMeta: true,
+      }],
+    ]
+  }
+}
