@@ -1,46 +1,3 @@
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-// import { router } from "expo-router";
-// import { colors, T } from "../../src/constants/theme";
-
-// export default function DashboardScreen() {
-//   return (
-//     <View style={s.container}>
-//       <Text style={s.title}>
-//         You're Smoke Free
-//       </Text>
-
-//       <View style={s.statCard}>
-//         <Text style={s.statLabel}>Days Smoke Free</Text>
-//         <Text style={s.statValue}>12</Text>
-//       </View>
-
-//       <TouchableOpacity
-//         style={s.cravingBtn}
-//         onPress={() => router.push("/craving-rescue")}
-//       >
-//         <Text style={s.cravingBtnText}>
-//           I Have a Craving
-//         </Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, padding: 24, backgroundColor: colors.bg },
-//   title: { ...T.h1, color: colors.textPrimary, marginBottom: 24 },
-//   statCard: { backgroundColor: colors.surface, padding: 24, borderRadius: 16, marginBottom: 16 },
-//   statLabel: { ...T.body, color: colors.textMuted },
-//   statValue: { ...T.h1, color: colors.tealLight, marginTop: 4 },
-//   cravingBtn: { 
-//     backgroundColor: colors.danger, 
-//     padding: 16, 
-//     borderRadius: 12, 
-//     alignItems: 'center' 
-//   },
-//   cravingBtnText: { ...T.bodyMedium, color: colors.textPrimary },
-// });
-
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -77,7 +34,7 @@ function formatTime(minutes: number) {
 export default function DashboardScreen() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const { streak, cigarettesAvoided, moneySaved, lifeRegained, loading, refresh } = useDashboardStats()
+  const { streak, cigarettesAvoided, moneySaved, lifeRegained, nextMilestone, loading, refresh } = useDashboardStats()
   const firstName = user?.name?.split(' ')[0] ?? 'there'
 
   return (
@@ -111,7 +68,7 @@ export default function DashboardScreen() {
             { label: 'Not smoked',     value: `${cigarettesAvoided ?? 0}`, sub: 'cigarettes' },
             { label: 'Money saved',    value: `₦${moneySaved?.toLocaleString() ?? '0'}`, sub: 'total' },
             { label: 'Life regained',  value: `${lifeRegained ?? 0}h`, sub: 'of your life' },
-            { label: 'Health Score',   value: `85%`, sub: 'estimated' },
+            { label: 'Health Score',   value: `${nextMilestone?.progressPercent ?? 0}%`, sub: nextMilestone?.name ?? 'loading' },
           ].map((s) => (
             <View key={s.label} style={styles.statCard}>
               <Text style={styles.statValue}>{s.value}</Text>

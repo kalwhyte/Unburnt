@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
 
 export const api = axios.create({
-  baseURL: process.env.NEST_PUBLIC_API_URL || "http://localhost:3000",
+  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000",
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {

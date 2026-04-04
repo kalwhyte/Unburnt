@@ -8,10 +8,25 @@ export const createSmokingLog = async (data: any) => {
   return res.data;
 };
 
-export const getSmokingStats = async () => {
-  const res = await api.get("/smoking-logs/stats");
+export const dailySummary = async () => {
+  const res = await api.get("/smoking-logs/summary/daily");
   return res.data;
 };
+
+export const weeklySummary = async () => {
+  const res = await api.get("/smoking-logs/summary/weekly");
+  return res.data;
+};
+
+export const getSmokingLog = async (id: string) => {
+  const res = await api.get(`/smoking-logs/${id}`);
+  return res.data;
+};
+
+// export const getSmokingStats = async () => {
+//   const res = await api.get("/smoking-logs/stats");
+//   return res.data;
+// };
 
 export const deleteSmokingLog = async (id: string) => {
   const res = await api.delete(`/smoking-logs/${id}`);

@@ -1,85 +1,3 @@
-// import React from 'react'
-// import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { useDashboardStats } from '../../src/hooks/useDashboardStats'
-// import { colors, T, radius } from '../../src/constants/theme'
-// import { StatCard } from '../../src/components/dashboard/StatCard'
-
-// const { width } = Dimensions.get('window')
-
-// export default function ProgressScreen() {
-//   const { streak, cigarettesAvoided, moneySaved, lifeRegained, loading } = useDashboardStats()
-
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
-//         <View style={s.header}>
-//           <Text style={s.title}>Your Progress</Text>
-//           <Text style={s.sub}>Every second counts toward a healthier you.</Text>
-//         </View>
-
-//         <View style={s.mainStats}>
-//           <View style={s.streakCircle}>
-//             <Text style={s.streakValue}>{streak}</Text>
-//             <Text style={s.streakLabel}>Day Streak</Text>
-//           </View>
-//         </View>
-
-//         <View style={s.grid}>
-//           <View style={s.row}>
-//             <StatCard 
-//               label="Cigarettes Avoided" 
-//               value={cigarettesAvoided.toString()} 
-//             />
-//             <StatCard 
-//               label="Money Saved" 
-//               value={`₦${moneySaved.toLocaleString()}`} 
-//             />
-//           </View>
-//           <View style={s.row}>
-//             <StatCard 
-//               label="Life Regained" 
-//               value={`${lifeRegained}h`} 
-//             />
-//             <StatCard 
-//               label="Health Score" 
-//               value="85%" 
-//             />
-//           </View>
-//         </View>
-
-//         <View style={s.milestoneCard}>
-//           <Text style={s.cardTitle}>Next Milestone</Text>
-//           <View style={s.progressTrack}>
-//             <View style={[s.progressBar, { width: '65%' }]} />
-//           </View>
-//           <Text style={s.milestoneText}>65% to 30-day streak</Text>
-//         </View>
-
-//       </ScrollView>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   scroll: { padding: 20, gap: 20 },
-//   header: { gap: 4 },
-//   title: { ...T.h1, color: colors.textPrimary },
-//   sub: { ...T.body, color: colors.textMuted },
-//   mainStats: { alignItems: 'center', marginVertical: 10 },
-//   streakCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: colors.teal, alignItems: 'center', justifyContent: 'center' },
-//   streakValue: { ...T.h2, color: '#fff' },
-//   streakLabel: { ...T.caption, color: '#fff' },
-//   grid: { gap: 12 },
-//   row: { flexDirection: 'row', gap: 12 },
-//   milestoneCard: { backgroundColor: colors.card, padding: 16, borderRadius: radius.sm, alignItems: 'center' },
-//   cardTitle: { ...T.h2, color: colors.textPrimary, marginBottom: 12 },
-//   progressTrack: { width: '100%', height: 10, backgroundColor: colors.border, borderRadius: 5, overflow: 'hidden', marginBottom: 8 },
-//   progressBar: { height: '100%', backgroundColor: colors.teal },
-//   milestoneText: { ...T.caption, color: colors.textMuted }
-// })
-
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -114,7 +32,7 @@ const PLACEHOLDER_MILESTONES = [
 
 export default function ProgressScreen() {
   const [period, setPeriod] = useState<Period>('30d')
-  const { stats: data, loading, refresh } = useProgress()
+  const { stats: data, loading, refresh } = useProgress(period)
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -164,8 +82,8 @@ export default function ProgressScreen() {
 
         <Card style={{ marginBottom: spacing.lg }}>
           <Text style={styles.cardLabel}>Money saved</Text>
-          <Text style={{ ...T.h1, color: colors.teal, fontSize: 36, marginBottom: 4 }}>${data?.moneySaved ?? '0.00'}</Text>
-          <Text style={{ ...T.caption, color: colors.textMuted }}>At this rate: ${data?.projectedMonthly ?? '0'}/month</Text>
+          <Text style={{ ...T.h1, color: colors.teal, fontSize: 36, marginBottom: 4 }}>₦{data?.moneySaved ?? '0.00'}</Text>
+          <Text style={{ ...T.caption, color: colors.textMuted }}>At this rate: ₦{data?.projectedMonthly ?? '0'}/month</Text>
         </Card>
 
         <Text style={styles.sectionTitle}>Milestones</Text>

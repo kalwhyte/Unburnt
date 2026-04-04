@@ -1,28 +1,4 @@
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-// import { colors, T } from "../../src/constants/theme";
 
-// export default function SmokingLogScreen() {
-//   return (
-//     <View style={s.container}>
-//       <Text style={s.title}>
-//         Log Smoking
-//       </Text>
-
-//       <TouchableOpacity style={s.button}>
-//         <Text style={s.buttonText}>
-//           Log Cigarette
-//         </Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, padding: 24, backgroundColor: colors.bg },
-//   title: { ...T.h1, color: colors.textPrimary, marginBottom: 16 },
-//   button: { backgroundColor: colors.teal, padding: 16, borderRadius: 12, alignItems: 'center' },
-//   buttonText: { ...T.bodyMedium, color: colors.textPrimary },
-// });
 
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native'

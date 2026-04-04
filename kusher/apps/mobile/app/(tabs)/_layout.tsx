@@ -1,6 +1,6 @@
 // app/(tabs)/_layout.tsx
-import { colors } from '../../src/constants/theme'
-import { HomeIcon, ChartIcon, ClockIcon, ProfileIcon } from '../../src/components/common/Icons'
+import { colors, T } from '../../src/constants/theme'
+import { HomeIcon, ChartIcon, InsightsIcon, SettingsIcon} from '../../src/components/common/Icons'
 import { Tabs } from 'expo-router'
 
 export default function TabsLayout() {
@@ -20,10 +20,12 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 11, fontFamily: 'Inter-Regular' },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color }) => <HomeIcon color={color} /> }} />
-      <Tabs.Screen name="progress" options={{ title: 'Progress', tabBarIcon: ({ color }) => <ChartIcon color={color} /> }} />
-      <Tabs.Screen name="log" options={{ title: 'Log', tabBarIcon: ({ color }) => <ClockIcon color={color} /> }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: ({ color }) => <ProfileIcon color={color} /> }} />
-    </Tabs>
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color }: { color: string }) => <HomeIcon color={color} /> }} />
+      <Tabs.Screen name="progress" options={{ title: 'Progress', tabBarIcon: ({ color }: { color: string }) => <ChartIcon color={color} /> }} />
+      <Tabs.Screen name="insights" options={{ title: 'Insights', tabBarIcon: ({ color }: { color: string }) => <InsightsIcon color={color} /> }} />
+      <Tabs.Screen name="settings" options={{ title: 'Profile', tabBarIcon: ({ color }: { color: string }) => <SettingsIcon color={color} /> }} />
+      <Tabs.Screen name="dashboard" options={{ title: 'Dashboard', tabBarIcon: ({ color }: { color: string }) => <ChartIcon color={color} /> }} />
+      <Tabs.Screen name="support" options={{ href: null }} />
+      </Tabs>
   )
 }

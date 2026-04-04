@@ -1,21 +1,20 @@
 import { api } from "./client";
 
-export const registerPushToken = async (token: string) => {
-  const res = await api.post("/notifications/register", { token });
+export const getNotifications = async () => {
+  const res = await api.get("/notifications");
   return res.data;
 };
 
-export const getNotificationSettings = async () => {
-  const res = await api.get("/notifications/settings");
+export const markOneRead = async (id: string) => {
+  const res = await api.patch(`/notifications/${id}/read`);
   return res.data;
 };
 
-export const updateNotificationSettings = async (settings: {
-  remindersEnabled: boolean;
-  milestonesEnabled: boolean;
-  quietHoursStart?: string;
-  quietHoursEnd?: string;
-}) => {
-  const res = await api.patch("/notifications/settings", settings);
+export const markAllRead = async () => {
+  const res = await api.patch("/notifications/read-all");
   return res.data;
+};
+
+export const deleteNotification = async (id: string) => {
+  await api.delete(`/notifications/${id}`);
 };

@@ -1,0 +1,13 @@
+{
+  "android": {
+    "package": "com.kalwhyte.laststick"
+  },
+  "ios": {
+    "bundleIdentifier": "com.kalwhyte.laststick"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "4dbbc24b-ab48-449c-a2f9-784fc27332c5"
+    }
+  }
+}

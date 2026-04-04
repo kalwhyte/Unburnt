@@ -1,7 +1,10 @@
 {
   "name": "laststick",
   "private": true,
-  "packageManager": "",  
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -11,6 +14,15 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "turbo": "^2.0.0"
-  }
+    "react-refresh": "^0.18.0",
+    "turbo": "^2.0.0",
+    "typescript": "~5.9.2"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "expo": "~55.0.9",
+    "react": "19.2.0",
+    "react-native": "0.83.4"
+  },
+  "version": "1.0.0"
 }

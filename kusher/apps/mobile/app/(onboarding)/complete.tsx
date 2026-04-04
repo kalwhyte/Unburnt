@@ -1,70 +1,3 @@
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-// import { useRouter } from 'expo-router'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { useOnboardingStore } from '../../src/store/onboardingStore'
-// import { colors, T } from '../../src/constants/theme'
-
-// export default function OnboardingCompleteScreen() {
-//   const router = useRouter()
-//   const complete = useOnboardingStore((s) => s.complete)
-
-//   const handleFinish = () => {
-//     complete()
-//     router.replace('/(tabs)')
-//   }
-
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <View style={s.body}>
-//         <View style={s.successIcon}>
-//           <Text style={s.iconText}>🎉</Text>
-//         </View>
-//         <Text style={s.title}>You're all set!</Text>
-//         <Text style={s.sub}>
-//           Your personalized quit plan is ready. We're with you every step of the way on this journey to a smoke-free life.
-//         </Text>
-
-//         <View style={s.summaryCard}>
-//           <Text style={s.summaryTitle}>Your Commitment</Text>
-//           <View style={s.divider} />
-//           <Text style={s.summaryText}>• Reclaiming your health</Text>
-//           <Text style={s.summaryText}>• Saving for what matters</Text>
-//           <Text style={s.summaryText}>• Breathing easier every day</Text>
-//         </View>
-//       </View>
-
-//       <View style={s.footer}>
-//         <TouchableOpacity style={s.btnPrimary} onPress={handleFinish}>
-//           <Text style={s.btnPrimaryText}>Go to Dashboard</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   body: { flex: 1, padding: 24, alignItems: 'center', justifyContent: 'center' },
-//   successIcon: {
-//     width: 80,
-//     height: 80,
-//     backgroundColor: colors.tealBg,
-//     borderRadius: 40,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     marginBottom: 20,
-//   },
-//   iconText: { fontSize: 36 },
-//   title: { ...T.h1, color: colors.textPrimary, marginBottom: 8 },
-//   sub: { ...T.body, color: colors.textMuted, textAlign: 'center', marginBottom: 24 },
-//   summaryCard: { width: '100%', backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 32 },
-//   summaryTitle: { ...T.bodyMedium, color: colors.textPrimary, marginBottom: 8 },
-//   divider: { height: 1, backgroundColor: colors.border, marginVertical: 8 },
-//   summaryText: { ...T.body, color: colors.textMuted, marginBottom: 4 },
-//   footer: { paddingHorizontal: 24, paddingBottom: 24 },
-//   btnPrimary: { backgroundColor: colors.teal, borderRadius: 12, height: 52, alignItems: 'center', justifyContent: 'center' },
-//   btnPrimaryText: { ...T.bodyMedium, color: colors.textPrimary },
-// })
 
 import React, { useEffect, useRef } from 'react'
 import { View, Text, StyleSheet, Animated } from 'react-native'
@@ -83,7 +16,7 @@ const COMMITMENTS = [
 
 export default function OnboardingCompleteScreen() {
   const router  = useRouter()
-  const complete = useOnboardingStore((s) => s.complete)
+  const markComplete = useOnboardingStore((s) => s.markComplete)
   const fadeAnim  = useRef(new Animated.Value(0)).current
   const scaleAnim = useRef(new Animated.Value(0.8)).current
 
@@ -95,7 +28,7 @@ export default function OnboardingCompleteScreen() {
   }, [])
 
   const handleStart = async () => {
-    complete()
+    await markComplete()
     router.replace('/(tabs)/dashboard')
   }
 

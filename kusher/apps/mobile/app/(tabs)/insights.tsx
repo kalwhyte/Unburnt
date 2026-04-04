@@ -1,331 +1,246 @@
-// import React from 'react'
-// import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { colors, T, radius } from '../../src/constants/theme'
-// import { ChartIcon, StreakIcon, ClockIcon } from '../../src/components/common/Icons'
-
-// const { width } = Dimensions.get('window')
-
-// export default function InsightsScreen() {
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <ScrollView contentContainerStyle={s.scrollContent}>
-//         <View style={s.header}>
-//           <Text style={s.title}>Insights</Text>
-//           <Text style={s.sub}>Understand your patterns and progress</Text>
-//         </View>
-
-//         <View style={s.grid}>
-//           <View style={s.statCard}>
-//             <View style={[s.iconCircle, { backgroundColor: 'rgba(45, 212, 191, 0.1)' }]}>
-//               <StreakIcon color={colors.teal} size={20} />
-//             </View>
-//             <Text style={s.statValue}>12</Text>
-//             <Text style={s.statLabel}>Day Streak</Text>
-//           </View>
-
-//           <View style={s.statCard}>
-//             <View style={[s.iconCircle, { backgroundColor: 'rgba(248, 113, 113, 0.1)' }]}>
-//               <ClockIcon color={colors.danger} size={20} />
-//             </View>
-//             <Text style={s.statValue}>4</Text>
-//             <Text style={s.statLabel}>Cravings Beat</Text>
-//           </View>
-//         </View>
-
-//         <View style={s.section}>
-//           <Text style={s.sectionTitle}>Trigger Analysis</Text>
-//           <View style={s.chartPlaceholder}>
-//             <View style={s.barRow}>
-//               <Text style={s.barLabel}>Stress</Text>
-//               <View style={s.barContainer}>
-//                 <View style={[s.bar, { width: '80%', backgroundColor: colors.teal }]}></View>
-//               </View>
-//             </View>
-//             <View style={s.barRow}>
-//               <Text style={s.barLabel}>Social</Text>
-//               <View style={s.barContainer}>
-//                 <View style={[s.bar, { width: '60%', backgroundColor: colors.teal }]}></View>
-//               </View>
-//             </View>
-//             <View style={s.barRow}>
-//               <Text style={s.barLabel}>Boredom</Text>
-//               <View style={s.barContainer}>
-//                 <View style={[s.bar, { width: '40%', backgroundColor: colors.teal }]}></View>
-//               </View>
-//             </View>
-//           </View>
-//         </View>
-
-//       </ScrollView>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   scrollContent: { padding: 20, gap: 20 },
-//   header: { marginBottom: 20 },
-//   title: { fontSize: 24, fontFamily: 'Inter-Bold', color: colors.textPrimary },
-//   sub: { fontSize: 14, fontFamily: 'Inter-Regular', color: colors.textDim },
-//   grid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-//   statCard: { flex: 1, alignItems: 'center', padding: 12, borderRadius: radius.sm, backgroundColor: colors.card },
-//   iconCircle: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-//   statValue: { fontSize: 20, fontFamily: 'Inter-Bold', color: colors.textPrimary },
-//   statLabel: { fontSize: 12, fontFamily: 'Inter-Regular', color: colors.textDim },
-//   section: { marginBottom: 20 },
-//   sectionTitle: { fontSize: 16, fontFamily: 'Inter-Bold', color: colors.textPrimary, marginBottom: 12 },
-//   chartPlaceholder: { backgroundColor: colors.card, borderRadius: radius.sm, padding: 12 },
-//   barRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-//   barLabel: { flex: 1, fontSize: 12, fontFamily: 'Inter-Regular', color: colors.textDim },
-//   barContainer: { flex: 1, height: 8, borderRadius: radius.sm, backgroundColor: 'rgba(255, 255, 255, 0.1)' },
-//   bar: { height: '100%', borderRadius: radius.sm },
-// })
-
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import Card from '../../src/components/common/Card'
+import { useInsights } from '../../src/hooks/useInsights'
 
 type Tab = 'patterns' | 'triggers' | 'mood'
-
 const TABS: { key: Tab; label: string }[] = [
   { key: 'patterns', label: 'Patterns' },
   { key: 'triggers', label: 'Triggers' },
   { key: 'mood',     label: 'Mood' },
 ]
 
-const TRIGGER_DATA = [
-  { label: 'Stress',        count: 14, pct: 88 },
-  { label: 'After meals',   count: 9,  pct: 56 },
-  { label: 'With coffee',   count: 8,  pct: 50 },
-  { label: 'Boredom',       count: 6,  pct: 38 },
-  { label: 'Social',        count: 4,  pct: 25 },
-  { label: 'Driving',       count: 3,  pct: 19 },
-]
-
-const MOOD_DATA = [
-  { day: 'M', score: 3 },
-  { day: 'T', score: 4 },
-  { day: 'W', score: 2 },
-  { day: 'T', score: 4 },
-  { day: 'F', score: 5 },
-  { day: 'S', score: 4 },
-  { day: 'S', score: 5 },
-]
-
-const HOUR_DATA = [
-  { hour: '6am', cravings: 1 },
-  { hour: '9am', cravings: 3 },
-  { hour: '12pm',cravings: 4 },
-  { hour: '3pm', cravings: 5 },
-  { hour: '6pm', cravings: 3 },
-  { hour: '9pm', cravings: 2 },
-]
-
 function HeatBar({ pct, color }: { pct: number; color: string }) {
   return (
     <View style={{ flex: 1, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' }}>
-      <View style={{ width: `${pct}%`, height: '100%', backgroundColor: color, borderRadius: 3 }} />
+      <View style={{ width: `${Math.min(pct, 100)}%`, height: '100%', backgroundColor: color, borderRadius: 3 }} />
     </View>
   )
 }
 
-function PatternsTab() {
-  const maxCravings = Math.max(...HOUR_DATA.map(h => h.cravings))
+function EmptyCard({ message }: { message: string }) {
+  return (
+    <Card style={{ marginBottom: spacing.md, alignItems: 'center', paddingVertical: spacing.xl }}>
+      <Text style={{ fontSize: 32, marginBottom: spacing.sm }}>📭</Text>
+      <Text style={{ ...T.body, color: colors.textMuted, textAlign: 'center' }}>{message}</Text>
+    </Card>
+  )
+}
+
+function PatternsTab({ data }: { data: any }) {
+  const peakHours = data?.peakHours
+  const reduction = data?.reduction
+  const willpower = data?.cravingVsSmoking
+
+  const byHour = peakHours?.byHour ?? []
+  const maxTotal = Math.max(...byHour.map((h: any) => h.total), 1)
+  const trend = reduction?.trend ?? []
+  const maxWeek = Math.max(...trend.map((w: any) => w.total), 1)
+
   return (
     <View>
       <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Craving heatmap — by hour</Text>
-        <Text style={styles.cardHint}>When your cravings are most intense this week</Text>
-        <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
-          {HOUR_DATA.map((h) => (
-            <View key={h.hour} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-              <Text style={[styles.axisLabel, { width: 36 }]}>{h.hour}</Text>
-              <HeatBar pct={(h.cravings / maxCravings) * 100} color={colors.danger} />
-              <Text style={[styles.axisLabel, { width: 16, textAlign: 'right' }]}>{h.cravings}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={styles.insightBox}>
-          <Text style={styles.insightText}>⚡ Your danger zone is 3pm. Schedule a walk or breathing exercise for then.</Text>
-        </View>
+        <Text style={styles.cardLabel}>Craving & smoking by hour</Text>
+        <Text style={styles.cardHint}>When your urges hit hardest</Text>
+        {byHour.length === 0 ? (
+          <Text style={{ ...T.caption, color: colors.textDim, marginTop: spacing.md }}>No data yet — log some cravings first.</Text>
+        ) : (
+          <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
+            {byHour.slice(0, 8).map((h: any) => (
+              <View key={h.hour} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                <Text style={[styles.axisLabel, { width: 40 }]}>{h.label}</Text>
+                <HeatBar pct={(h.total / maxTotal) * 100} color={colors.danger} />
+                <Text style={[styles.axisLabel, { width: 20, textAlign: 'right' }]}>{h.total}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+        {peakHours?.hardestTimeOfDay && (
+          <View style={styles.insightBox}>
+            <Text style={styles.insightText}>
+              ⚡ Your danger zone is {peakHours.hardestTimeOfDay.label}. Schedule a walk or breathing exercise then.
+            </Text>
+          </View>
+        )}
       </Card>
 
       <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Weekly craving trend</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 72, marginTop: spacing.md }}>
-          {[5,8,6,9,4,3,2].map((v, i) => {
-            const days = ['M','T','W','T','F','S','S']
-            return (
+        <Text style={styles.cardLabel}>Weekly cigarette trend</Text>
+        <Text style={styles.cardHint}>Last 6 weeks vs your baseline</Text>
+        {trend.length === 0 ? (
+          <Text style={{ ...T.caption, color: colors.textDim, marginTop: spacing.md }}>No data yet.</Text>
+        ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 72, marginTop: spacing.md }}>
+            {trend.map((w: any, i: number) => (
               <View key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 4, height: '100%' }}>
-                <View style={{ width: '100%', height: `${(v / 9) * 100}%`, backgroundColor: colors.teal, borderRadius: 3 }} />
-                <Text style={styles.axisLabel}>{days[i]}</Text>
+                <View style={{ width: '100%', height: `${Math.max((w.total / maxWeek) * 100, 4)}%`, backgroundColor: colors.teal, borderRadius: 3 }} />
+                <Text style={styles.axisLabel}>W{i + 1}</Text>
               </View>
-            )
-          })}
-        </View>
-        <View style={styles.insightBox}>
-          <Text style={styles.insightText}>📉 Your cravings are decreasing — down 60% from day 1.</Text>
-        </View>
+            ))}
+          </View>
+        )}
+        {reduction?.overallReductionPercent !== null && reduction?.overallReductionPercent !== undefined && (
+          <View style={styles.insightBox}>
+            <Text style={styles.insightText}>
+              {reduction.overallReductionPercent >= 0
+                ? `📉 Down ${reduction.overallReductionPercent}% from week 1 — great progress.`
+                : `📈 Up ${Math.abs(reduction.overallReductionPercent)}% from week 1 — keep pushing.`}
+            </Text>
+          </View>
+        )}
       </Card>
 
       <Card>
-        <Text style={styles.cardLabel}>Smoke-free streaks</Text>
-        <View style={{ flexDirection: 'row', gap: 4, marginTop: spacing.md }}>
-          {Array(30).fill(0).map((_, i) => {
-            const smokeFree = Math.random() > 0.2
-            return (
-              <View
-                key={i}
-                style={{ flex: 1, height: 28, borderRadius: 3, backgroundColor: smokeFree ? colors.teal : colors.dangerBg }}
-              />
-            )
-          })}
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.xs }}>
-          <Text style={styles.axisLabel}>Day 1</Text>
-          <Text style={styles.axisLabel}>Day 30</Text>
-        </View>
-        <View style={{ flexDirection: 'row', gap: spacing.lg, marginTop: spacing.sm }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: colors.teal }} />
-            <Text style={styles.axisLabel}>Smoke-free</Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: colors.dangerBg }} />
-            <Text style={styles.axisLabel}>Smoked</Text>
-          </View>
-        </View>
-      </Card>
-    </View>
-  )
-}
-
-function TriggersTab() {
-  return (
-    <View>
-      <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Top triggers this month</Text>
-        <Text style={styles.cardHint}>Based on your craving logs</Text>
-        <View style={{ gap: spacing.md, marginTop: spacing.md }}>
-          {TRIGGER_DATA.map((t, i) => (
-            <View key={t.label} style={{ gap: 5 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.triggerLabel}>
-                  {i === 0 ? '🔥 ' : ''}{t.label}
-                </Text>
-                <Text style={styles.triggerCount}>{t.count}×</Text>
-              </View>
-              <HeatBar pct={t.pct} color={i === 0 ? colors.danger : colors.teal} />
-            </View>
-          ))}
-        </View>
-      </Card>
-
-      <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Trigger insight</Text>
-        <View style={styles.insightBox}>
-          <Text style={styles.insightText}>
-            💡 Stress causes 88% of your cravings. Try the 4-7-8 breathing technique next time you feel overwhelmed — it activates your parasympathetic nervous system within 60 seconds.
-          </Text>
-        </View>
-      </Card>
-
-      <Card>
-        <Text style={styles.cardLabel}>Time of day vs trigger</Text>
-        <Text style={styles.cardHint}>When each trigger tends to hit</Text>
-        {[
-          { trigger: 'Stress', times: ['9am','3pm','7pm'] },
-          { trigger: 'Coffee', times: ['7am','10am'] },
-          { trigger: 'After meals', times: ['12pm','7pm'] },
-        ].map((t) => (
-          <View key={t.trigger} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.md }}>
-            <Text style={[styles.triggerLabel, { width: 80 }]}>{t.trigger}</Text>
-            <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-              {t.times.map(time => (
-                <View key={time} style={styles.timeBadge}>
-                  <Text style={styles.timeBadgeText}>{time}</Text>
+        <Text style={styles.cardLabel}>Willpower ratio</Text>
+        {willpower ? (
+          <>
+            <Text style={{ ...T.h1, color: colors.teal, fontSize: 42 }}>
+              {willpower.willpowerRate ?? 0}
+              <Text style={{ ...T.body, color: colors.textMuted }}>%</Text>
+            </Text>
+            <Text style={{ ...T.bodySmall, color: colors.textMuted, marginTop: spacing.xs }}>
+              {willpower.verdict ?? 'Keep going.'}
+            </Text>
+            <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
+              {[
+                { label: 'Cravings resisted', val: willpower.resisted,        color: colors.teal   },
+                { label: 'Smoked on craving', val: willpower.smokedOnCraving, color: colors.danger },
+                { label: 'Unresolved',         val: willpower.unresolved,      color: colors.border },
+              ].map((s) => (
+                <View key={s.label} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={styles.axisLabel}>{s.label}</Text>
+                  <Text style={{ ...T.captionMedium, color: s.color }}>{s.val}</Text>
                 </View>
               ))}
             </View>
-          </View>
-        ))}
+          </>
+        ) : (
+          <Text style={{ ...T.caption, color: colors.textDim, marginTop: spacing.md }}>No data yet.</Text>
+        )}
       </Card>
     </View>
   )
 }
 
-function MoodTab() {
-  const maxScore = 5
+function TriggersTab({ data }: { data: any }) {
+  const triggers = data?.triggers?.triggers ?? []
+  const top = data?.triggers?.topTrigger
+  const hardest = data?.triggers?.hardest
+  const maxTotal = Math.max(...triggers.map((t: any) => t.total), 1)
+
+  if (triggers.length === 0) return <EmptyCard message="No trigger data yet. Log some cravings with triggers to see patterns." />
+
   return (
     <View>
       <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Mood this week</Text>
-        <Text style={styles.cardHint}>Logged after craving events</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 80, marginTop: spacing.md }}>
-          {MOOD_DATA.map((d, i) => (
-            <View key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 4, height: '100%' }}>
-              <View style={{
-                width: '100%',
-                height: `${(d.score / maxScore) * 100}%`,
-                backgroundColor: d.score >= 4 ? colors.teal : d.score >= 3 ? colors.tealDark : colors.danger,
-                borderRadius: 3,
-              }} />
-              <Text style={styles.axisLabel}>{d.day}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.sm }}>
-          <Text style={styles.axisLabel}>1 = very low</Text>
-          <Text style={styles.axisLabel}>5 = great</Text>
-        </View>
-      </Card>
-
-      <Card style={{ marginBottom: spacing.md }}>
-        <Text style={styles.cardLabel}>Mood vs smoking correlation</Text>
+        <Text style={styles.cardLabel}>Top triggers</Text>
+        <Text style={styles.cardHint}>Across smoking and craving logs</Text>
         <View style={{ gap: spacing.md, marginTop: spacing.md }}>
-          {[
-            { label: 'Low mood days with cravings', pct: 82, color: colors.danger },
-            { label: 'High mood days smoke-free',   pct: 91, color: colors.teal },
-            { label: 'Neutral days resisted',       pct: 68, color: colors.tealLight },
-          ].map((c) => (
-            <View key={c.label} style={{ gap: 5 }}>
+          {triggers.slice(0, 6).map((t: any, i: number) => (
+            <View key={t.id} style={{ gap: 5 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.triggerLabel}>{c.label}</Text>
-                <Text style={[styles.triggerCount, { color: c.color }]}>{c.pct}%</Text>
+                <Text style={styles.triggerLabel}>{i === 0 ? '🔥 ' : ''}{t.name}</Text>
+                <Text style={styles.triggerCount}>{t.total}×</Text>
               </View>
-              <HeatBar pct={c.pct} color={c.color} />
+              <HeatBar pct={(t.total / maxTotal) * 100} color={i === 0 ? colors.danger : colors.teal} />
             </View>
           ))}
         </View>
-        <View style={styles.insightBox}>
-          <Text style={styles.insightText}>
-            🌟 Your mood is your most reliable smoke-free predictor. Use the mood check-in daily to stay ahead.
-          </Text>
+      </Card>
+
+      {top && (
+        <Card style={{ marginBottom: spacing.md }}>
+          <Text style={styles.cardLabel}>Trigger insight</Text>
+          <View style={styles.insightBox}>
+            <Text style={styles.insightText}>
+              💡 {top.name} is your most common trigger ({top.total} times).
+              {hardest && hardest.successRate !== null
+                ? ` Hardest to resist: ${hardest.name} (${hardest.successRate}% success rate).`
+                : ''}
+            </Text>
+          </View>
+        </Card>
+      )}
+    </View>
+  )
+}
+
+function MoodTab({ data }: { data: any }) {
+  const mood = data?.mood
+  if (!mood || mood.whenCraving.length === 0) {
+    return <EmptyCard message="No mood data yet. Log some cravings with mood to see patterns." />
+  }
+
+  const maxCraving = Math.max(...mood.whenCraving.map((m: any) => m.count), 1)
+
+  return (
+    <View>
+      <Card style={{ marginBottom: spacing.md }}>
+        <Text style={styles.cardLabel}>Mood when craving</Text>
+        <Text style={styles.cardHint}>How you feel when urges hit</Text>
+        <View style={{ gap: spacing.md, marginTop: spacing.md }}>
+          {mood.whenCraving.slice(0, 5).map((m: any) => (
+            <View key={m.mood} style={{ gap: 5 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.triggerLabel}>{m.mood}</Text>
+                <Text style={styles.triggerCount}>{m.count}×</Text>
+              </View>
+              <HeatBar pct={(m.count / maxCraving) * 100} color={colors.danger} />
+            </View>
+          ))}
         </View>
       </Card>
 
-      <Card>
-        <Text style={styles.cardLabel}>Weekly mood average</Text>
-        <Text style={{ ...T.h1, color: colors.teal, fontSize: 42 }}>3.8<Text style={{ ...T.body, color: colors.textMuted }}> / 5</Text></Text>
-        <Text style={{ ...T.bodySmall, color: colors.textMuted, marginTop: spacing.xs }}>Up from 2.9 last week — your mood is improving as your body recovers.</Text>
-      </Card>
+      {mood.whenResisted.length > 0 && (
+        <Card style={{ marginBottom: spacing.md }}>
+          <Text style={styles.cardLabel}>Mood when resisting</Text>
+          <Text style={styles.cardHint}>Your strongest mental states</Text>
+          <View style={{ gap: spacing.md, marginTop: spacing.md }}>
+            {mood.whenResisted.slice(0, 5).map((m: any) => (
+              <View key={m.mood} style={{ gap: 5 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={styles.triggerLabel}>{m.mood}</Text>
+                  <Text style={styles.triggerCount}>{m.count}×</Text>
+                </View>
+                <HeatBar pct={(m.count / Math.max(...mood.whenResisted.map((r: any) => r.count), 1)) * 100} color={colors.teal} />
+              </View>
+            ))}
+          </View>
+          {mood.topResistedMood && (
+            <View style={styles.insightBox}>
+              <Text style={styles.insightText}>
+                🌟 You resist best when feeling {mood.topResistedMood}. Use that state to your advantage.
+              </Text>
+            </View>
+          )}
+        </Card>
+      )}
+
+      {mood.topSmokingMood && (
+        <Card>
+          <Text style={styles.cardLabel}>Watch out for</Text>
+          <Text style={{ ...T.body, color: colors.textMuted, marginTop: spacing.xs }}>
+            You're most likely to smoke when feeling{' '}
+            <Text style={{ color: colors.danger }}>{mood.topSmokingMood}</Text>.
+          </Text>
+        </Card>
+      )}
     </View>
   )
 }
 
 export default function InsightsScreen() {
-  const [tab, setTab]           = useState<Tab>('patterns')
-  const [loading, setLoading]   = useState(false)
+  const [tab, setTab] = useState<Tab>('patterns')
+  const { data, loading, error, refresh } = useInsights()
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={() => {}} tintColor={colors.teal} />}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.teal} />}
       >
         <Text style={styles.pageTitle}>Insights</Text>
 
@@ -337,9 +252,19 @@ export default function InsightsScreen() {
           ))}
         </View>
 
-        {tab === 'patterns' && <PatternsTab />}
-        {tab === 'triggers' && <TriggersTab />}
-        {tab === 'mood'     && <MoodTab />}
+        {loading && !data ? (
+          <View style={{ alignItems: 'center', paddingTop: 60 }}>
+            <ActivityIndicator color={colors.teal} />
+          </View>
+        ) : error ? (
+          <EmptyCard message="Failed to load insights. Pull down to retry." />
+        ) : (
+          <>
+            {tab === 'patterns' && <PatternsTab data={data} />}
+            {tab === 'triggers' && <TriggersTab data={data} />}
+            {tab === 'mood'     && <MoodTab     data={data} />}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   )
@@ -361,6 +286,4 @@ const styles = StyleSheet.create({
   insightText:   { ...T.bodySmall, color: colors.tealLight, lineHeight: 20 },
   triggerLabel:  { ...T.bodySmall, color: colors.textSecondary },
   triggerCount:  { ...T.captionMedium, color: colors.textMuted },
-  timeBadge:     { backgroundColor: colors.surface, borderRadius: radius.sm, paddingVertical: 2, paddingHorizontal: 7, borderWidth: 0.5, borderColor: colors.border },
-  timeBadgeText: { ...T.caption, color: colors.textMuted },
 })

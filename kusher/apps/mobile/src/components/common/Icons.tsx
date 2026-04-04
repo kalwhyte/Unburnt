@@ -9,7 +9,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Flame,
-  Settings
+  Settings,
+  Lightbulb,
 } from 'lucide-react-native';
 
 interface IconProps {
@@ -27,3 +28,4 @@ export const WarningIcon = ({ color, size = 24 }: IconProps) => <AlertCircle col
 export const SuccessIcon = ({ color, size = 24 }: IconProps) => <CheckCircle2 color={color} size={size} />;
 export const StreakIcon = ({ color, size = 24 }: IconProps) => <Flame color={color} size={size} />;
 export const SettingsIcon = ({ color, size = 24 }: IconProps) => <Settings color={color} size={size} />;
+export const InsightsIcon = ({ color, size = 24 }: IconProps) => <Lightbulb color={color} size={size} />;

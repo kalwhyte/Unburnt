@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { getProgressStats } from '../services/api/progress';
+import { getDashboard } from '../services/api/progress';
+import { useRefreshStore } from '@/store/useRefreshStore';
 
 export function useDashboardStats() {
+  const dashboardKey = useRefreshStore((state) => state.dashboardKey);
   const [stats, setStats] = useState({
     streak: 0,
     cigarettesAvoided: 0,
     moneySaved: 0,
     lifeRegained: 0,
+    nextMilestone: null as { name: string; requiredHours: number; progressPercent: number } | null,
     loading: true,
     error: null as string | null,
   });
@@ -14,15 +17,16 @@ export function useDashboardStats() {
   const fetchStats = async () => {
     try {
       setStats((prev) => ({ ...prev, loading: true }));
-      const data = await getProgressStats();
-      
+      const res = await getDashboard();
+      const d = res.data;
       setStats({
-        streak: data.streak_days || 0,
-        cigarettesAvoided: data.cigarettes_avoided || 0,
-        moneySaved: data.money_saved || 0,
-        lifeRegained: data.life_regained_hours || 0,
-        loading: false,
-        error: null,
+        streak:            Math.floor((d.currentStreakHours ?? 0) / 24),
+        cigarettesAvoided: d.cigarettesAvoidedToday ?? 0,
+        moneySaved:        d.moneySavedTotal ?? 0,
+        lifeRegained:      d.longestStreakHours ?? 0,
+        nextMilestone:     d.nextMilestone ?? null,
+        loading:           false,
+        error:             null,
       });
     } catch (err) {
       setStats((prev) => ({
@@ -35,7 +39,7 @@ export function useDashboardStats() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [dashboardKey]);
 
   return { ...stats, refresh: fetchStats };
 }

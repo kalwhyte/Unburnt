@@ -14,13 +14,15 @@
       "backgroundColor": "#0d0f14"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kalwhyte.kusherapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0d0f14"
-      }
+      },
+      "package": "com.kalwhyte.kusherapp"
     },
     "web": {
       "bundler": "metro",
@@ -29,7 +31,21 @@
     "plugins": [
       "expo-router",
       "expo-asset",
-      "expo-font"
-    ]
+      "expo-font",
+      "expo-dev-client"
+    ],
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "packagerOpts": {
+      "projectRoots": ["./"]
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4f177301-a19f-49f9-a690-30fa44ed503d",
+        "buildRoot": "apps/mobile"
+      }
+    }
   }
 }

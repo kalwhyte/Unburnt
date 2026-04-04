@@ -11,6 +11,14 @@ export class CreateSmokingLogDto {
   note?: string;
 
   @IsOptional()
+  @IsString()
+  mood?: string;
+
+  @IsOptional()
   @IsDateString()
-  smokedAt?: Date;
+  loggedAt?: Date;
+
+  @IsOptional()
+  @IsString()
+  triggerId?: string;
 }

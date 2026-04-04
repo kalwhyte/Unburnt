@@ -1,3 +1,4 @@
+// @ts-ignore
 import '../global.css'
 import { useEffect } from 'react'
 import { Stack } from 'expo-router'
@@ -6,10 +7,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NotificationProvider } from '../src/providers/NotificationProvider'
 import { AuthProvider } from '../src/providers/AuthProvider'
-import { useNotificationObserver } from '../src/hooks/useNotificationObserver'
+import { useNotificationFeed } from '../src/hooks/useNotificationObserver'
 
 export default function RootLayout() {
-  useNotificationObserver()
+  useNotificationFeed()
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -21,12 +22,13 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="notifications" />
               <Stack.Screen
                 name="craving-rescue"
                 options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
               />
               <Stack.Screen
-                name="log-smoke"
+                name="logs/smoking"
                 options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
               />
             </Stack>

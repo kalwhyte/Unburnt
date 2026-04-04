@@ -1,17 +1,8 @@
-// import { View, Text, Pressable } from 'react-native';
-// import { Link } from 'expo-router';
 
-// export default function Home() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//       <Text>Chimney</Text>
+import { Redirect } from 'expo-router';
+import { useAuthStore } from '../src/store/useAuthStore';
 
-//       <Link href="/login" asChild>
-//         <Pressable>
-//           <Text>Login</Text>
-//         </Pressable>
-//       </Link>
-//     </View>
-//   );
-// }
-
+export default function Index() {
+  const { token } = useAuthStore();
+  return <Redirect href={token ? '/(tabs)/dashboard' : '/(auth)/welcome'} />;
+}
