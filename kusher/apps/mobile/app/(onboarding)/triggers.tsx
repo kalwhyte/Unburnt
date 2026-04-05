@@ -24,19 +24,15 @@ const TRIGGERS = [
 
 export default function TriggersScreen() {
   const router = useRouter()
-  const { setProfile } = useOnboardingStore()
+  const { setField } = useOnboardingStore()
   const [selected, setSelected] = useState<string[]>([])
 
   const toggle = (v: string) =>
     setSelected(prev => prev.includes(v) ? prev.filter(t => t !== v) : [...prev, v])
 
   const handleNext = () => {
-    setProfile({
-      triggers: selected,
-      cigsPerDay: 0,
-      years: 0,
-      costPerPack: 0
-    })
+    setField('triggers', selected)
+    // router.push('/(onboarding)/smoking-profile')
     router.push('/(onboarding)/reasons')
   }
 

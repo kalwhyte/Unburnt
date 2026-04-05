@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import Button from '../../src/components/common/Button'
 import { useOnboardingStore } from '../../src/store/onboardingStore'
+import { api } from '@/services/api/client'
 
 const COMMITMENTS = [
   '✓ Your triggers are mapped',
@@ -28,8 +29,27 @@ export default function OnboardingCompleteScreen() {
   }, [])
 
   const handleStart = async () => {
-    await markComplete()
-    router.replace('/(tabs)/dashboard')
+    try {
+      const store = useOnboardingStore.getState()
+      
+      // create profile from onboarding data
+      await api.put('/profiles/me/init', {
+        cigarettesPerDay: parseInt(store.cigarettesPerDay) || 10,
+        yearsSmoking:     parseInt(store.yearsSmoked) || 1,
+        packCost:         parseFloat(store.packPrice?.replace(/[^0-9.]/g, '')) || 0,
+        quitDate:         store.quitDateChoice === 'today'
+                            ? new Date().toISOString()
+                            : new Date(Date.now() + 7 * 86400000).toISOString(),
+      })
+
+      await markComplete()
+      router.replace('/(tabs)/dashboard')
+    } catch (err) {
+      console.error('Failed to create profile', err)
+      // still navigate even if profile creation fails
+      await markComplete()
+      router.replace('/(tabs)/dashboard')
+    }
   }
 
   return (

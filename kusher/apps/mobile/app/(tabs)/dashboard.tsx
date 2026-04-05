@@ -25,7 +25,7 @@ function formatDate() {
   return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 }
 
-function formatTime(minutes: number) {
+function formatTime({ minutes }: { minutes: number }) {
   if (minutes < 60) return `${minutes}m`
   const h = Math.floor(minutes / 60)
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`
@@ -35,7 +35,7 @@ export default function DashboardScreen() {
   const router = useRouter()
   const { user } = useAuthStore()
   const { streak, cigarettesAvoided, moneySaved, lifeRegained, nextMilestone, loading, refresh } = useDashboardStats()
-  const firstName = user?.name?.split(' ')[0] ?? 'there'
+  const firstName = user?.firstName ?? 'there'
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -51,7 +51,7 @@ export default function DashboardScreen() {
             <Text style={styles.date}>{formatDate()}</Text>
           </View>
           <Pressable onPress={() => router.push('/(tabs)/settings')} style={styles.avatarBtn}>
-            <Text style={styles.avatarText}>{(user?.name ?? 'U')[0].toUpperCase()}</Text>
+            <Text style={styles.avatarText}>{(user?.firstName ?? 'U')[0].toUpperCase()}</Text>
           </Pressable>
         </View>
 

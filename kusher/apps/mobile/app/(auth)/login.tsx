@@ -1,60 +1,3 @@
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-// import { useState } from "react";
-// import { useLogin } from "../../src/hooks/useLogin";
-// import { colors, T } from "../../src/constants/theme";
-
-// export default function LoginScreen() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const { handleLogin, loading, error } = useLogin();
-
-//   return (
-//     <View style={s.container}>
-//       <Text style={s.title}>Login</Text>
-
-//       <TextInput
-//         placeholder="Email"
-//         style={s.input}
-//         value={email}
-//         onChangeText={setEmail}
-//         autoCapitalize="none"
-//         keyboardType="email-address"
-//       />
-
-//       <TextInput
-//         placeholder="Password"
-//         secureTextEntry
-//         style={s.input}
-//         value={password}
-//         onChangeText={setPassword}
-//       />
-
-//       {error ? (
-//         <Text style={s.errorText}>{error}</Text>
-//       ) : null}
-
-//       <TouchableOpacity
-//         style={s.button}
-//         onPress={() => handleLogin(email, password)}
-//         disabled={loading}
-//       >
-//         <Text style={s.buttonText}>
-//           {loading ? "Loading..." : "Login"}
-//         </Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, justifyContent: 'center', paddingHorizontal: 24, backgroundColor: colors.bg },
-//   title: { ...T.h1, color: colors.textPrimary, marginBottom: 24 },
-//   input: { borderWidth: 1, borderColor: colors.border, padding: 16, borderRadius: 12, marginBottom: 16, color: colors.textPrimary, ...T.body },
-//   errorText: { color: colors.danger, marginBottom: 16, ...T.bodySmall },
-//   button: { backgroundColor: colors.teal, padding: 16, borderRadius: 12, alignItems: 'center' },
-//   buttonText: { color: colors.textPrimary, ...T.bodyMedium },
-// });
-
 import React, { useState } from 'react'
 import { View, Text, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -65,7 +8,7 @@ import { useLogin } from '../../src/hooks/useLogin'
 
 export default function LoginScreen() {
   const router = useRouter()
-  const { login, loading, error } = useLogin()
+  const { handleLogin, loading, error } = useLogin()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -97,7 +40,7 @@ export default function LoginScreen() {
                 </Pressable>
               </View>
               <View>
-                <TextInput style={[styles.input, { paddingRight: 64 }]} value={password} onChangeText={setPassword} placeholder="••••••••" placeholderTextColor={colors.textDim} secureTextEntry={!showPass} returnKeyType="done" onSubmitEditing={() => login({ email: email.trim(), password })} />
+                <TextInput style={[styles.input, { paddingRight: 64 }]} value={password} onChangeText={setPassword} placeholder="••••••••" placeholderTextColor={colors.textDim} secureTextEntry={!showPass} returnKeyType="done" onSubmitEditing={() => handleLogin(email.trim(), password)} />
                 <Pressable onPress={() => setShowPass(p => !p)} style={styles.eyeBtn}>
                   <Text style={styles.eyeText}>{showPass ? 'Hide' : 'Show'}</Text>
                 </Pressable>
@@ -105,7 +48,7 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <Button title="Sign in" onPress={() => login({ email: email.trim(), password })} loading={loading} disabled={!email || !password} size="lg" style={{ marginBottom: spacing.xl }} />
+          <Button title="Sign in" onPress={() => handleLogin(email.trim(), password)} loading={loading} disabled={!email || !password} size="lg" style={{ marginBottom: spacing.xl }} />
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} /><Text style={styles.dividerText}>or</Text><View style={styles.dividerLine} />

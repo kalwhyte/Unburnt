@@ -1,12 +1,15 @@
-// @ts-ignore
 import * as Notifications from 'expo-notifications';
-// @ts-ignore
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 export async function registerForPushNotificationsAsync() {
   let token;
+
+  if (Platform.OS === 'web') {
+    console.log('Push notifications not supported on web');
+    return null;
+  }
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {

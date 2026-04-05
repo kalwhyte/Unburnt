@@ -1,74 +1,3 @@
-// import { useState, useEffect } from 'react';
-// import {
-//   getDashboard,
-//   getStreaks,
-//   getSavingsData,
-//   getHealthTimeline,
-//   getWeeklySummary,
-//   processMilestones,
-//   processHealthTimeline
-// } from '../services/api/progress';
-// import { getDailyCravings, getInsightsSummary } from '@/services/api/insights';
-
-// export function useProgress() {
-//   const [loading, setLoading] = useState(true);
-//   const [stats, setStats] = useState<any>(null);
-//   const [milestones, setMilestones] = useState<any[]>([]);
-//   const [health, setHealth] = useState<any[]>([]);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const fetchData = async () => {
-//     try {
-//       setLoading(true);
-//       const results = await Promise.allSettled([
-//         getDashboard(),
-//         getStreaks(),
-//         getSavingsData(),
-//         getHealthTimeline(),
-//         getWeeklySummary(),
-//       ]);
-
-//       const [
-//         statsRes,
-//         streaksRes,
-//         savingsRes,
-//         healthRes,
-//         weeklySummaryRes] = results;
-
-//       if (statsRes.status === 'fulfilled') setStats(statsRes.value);
-//       if (healthRes.status === 'fulfilled') setHealth(healthRes.value);
-//       if (streaksRes.status === 'fulfilled') setStats(streaksRes.value);
-//       if (savingsRes.status === 'fulfilled') setStats(savingsRes.value);
-//       if (weeklySummaryRes.status === 'fulfilled') setStats(weeklySummaryRes.value);
-
-//       const processedMilestones = processMilestones(statsRes.status === 'fulfilled' ? statsRes.value : { milestones: [] });
-//       const healthData = processHealthTimeline(healthRes.status === 'fulfilled' ? healthRes.value : { timeline: [] });
-//       setMilestones(processedMilestones);
-//       setHealth(healthData);
-
-
-//       setError(null);
-//     } catch (err) {
-//       setError('Failed to load progress data');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchData();
-//   }, []);
-
-//   return {
-//     stats,
-//     milestones,
-//     health,
-//     loading,
-//     error,
-//     refresh: fetchData,
-//   };
-// }
-
 import { useState, useEffect } from 'react';
 import { getDashboard, getSavingsData, getHealthTimeline } from '../services/api/progress';
 import { getDailyCravings, getInsightsSummary } from '../services/api/insights';
@@ -92,13 +21,35 @@ export function useProgress(period: '7d' | '30d' | '3m') {
       const from = new Date(Date.now() - days * 864000000).toISOString();
       const to = new Date().toISOString();
 
-      const [dashboard, savings, timeline, dailyCravings, insights] = await Promise.all([
+      const results = await Promise.allSettled([
         getDashboard(),
         getSavingsData(),
         getHealthTimeline(),
         getDailyCravings(),
         getInsightsSummary(),
       ]);
+
+      const [dashRes, savingsRes, timelineRes, cravingsRes, insightsRes] = results;
+
+      const dashboard    = dashRes.status    === 'fulfilled' ? dashRes.value    : null;
+      const savings      = savingsRes.status === 'fulfilled' ? savingsRes.value : null;
+      const timeline     = timelineRes.status === 'fulfilled' ? timelineRes.value : null;
+      const dailyCravings = cravingsRes.status === 'fulfilled' ? cravingsRes.value : null;
+      const insights     = insightsRes.status === 'fulfilled' ? insightsRes.value : null;
+
+      // log any failures
+      results.forEach((r, i) => {
+        if (r.status === 'rejected') {
+          console.error(`Call ${i} failed:`, r.reason?.response?.status, r.reason?.message);
+        }
+      });
+      // const [dashboard, savings, timeline, dailyCravings, insights] = await Promise.all([
+      //   getDashboard().catch(e => { console.error('Dashboard error:', e); return null; }),
+      //   getSavingsData().catch(e => { console.error('Savings error:', e); return null; }),
+      //   getHealthTimeline().catch(e => { console.error('Timeline error:', e); return null; }),
+      //   getDailyCravings().catch(e => { console.error('Daily cravings error:', e); return null; }),
+      //   getInsightsSummary().catch(e => { console.error('Insights error:', e); return null; }),
+      // ]);
 
       const streakHours = dashboard?.data?.currentStreakHours ?? 0;
       const streakDays  = Math.floor(streakHours / 24);
@@ -123,10 +74,6 @@ export function useProgress(period: '7d' | '30d' | '3m') {
           if (isNaN(date.getTime())) return null;
           return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         })(),
-        // progressPercent: m.progressPercent,
-        // achievedAt: m.achievedAt
-        //   ? new Date(m.achievedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        //   : null,
         progress: m.achieved ? undefined : m.progressPercent,
       }));
 

@@ -9,11 +9,11 @@ import { useRegister } from '../../src/hooks/useRegister'
 export default function RegisterScreen() {
   const router = useRouter()
   const { register, loading, error } = useRegister()
-  const [name, setName]         = useState('')
-  const [email, setEmail]       = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
-  const isValid = name.trim().length > 1 && email.includes('@') && password.length >= 8
+  const isValid = firstName.trim().length > 1 && email.includes('@') && password.length >= 8
 
   const strengthLevel = Math.min(Math.floor(password.length / 3), 4)
   const strengthLabel = password.length < 6 ? 'Weak' : password.length < 10 ? 'Fair' : 'Strong'
@@ -37,17 +37,17 @@ export default function RegisterScreen() {
           <View style={styles.form}>
             <View style={styles.field}>
               <Text style={styles.label}>Your name</Text>
-              <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Alex" placeholderTextColor={colors.textDim} autoCapitalize="words" />
+              <TextInput style={styles.input} value={firstName} onChangeText={setFirstName} placeholder="Whytecode Tech" placeholderTextColor={colors.textDim} autoCapitalize="words" />
             </View>
             <View style={styles.field}>
               <Text style={styles.label}>Email</Text>
-              <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="you@example.com" placeholderTextColor={colors.textDim} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
+              <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="you@kusher.com" placeholderTextColor={colors.textDim} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
             </View>
             <View style={styles.field}>
               <Text style={styles.label}>Password</Text>
               <Text style={styles.hint}>At least 8 characters</Text>
               <View>
-                <TextInput style={[styles.input, { paddingRight: 64 }]} value={password} onChangeText={setPassword} placeholder="••••••••" placeholderTextColor={colors.textDim} secureTextEntry={!showPass} returnKeyType="done" onSubmitEditing={() => register({ name: name.trim(), email: email.trim(), password })} />
+                <TextInput style={[styles.input, { paddingRight: 64 }]} value={password} onChangeText={setPassword} placeholder="••••••••" placeholderTextColor={colors.textDim} secureTextEntry={!showPass} returnKeyType="done" onSubmitEditing={() => register({ firstName: firstName.trim(), email: email.trim(), password })} />
                 <Pressable onPress={() => setShowPass(p => !p)} style={styles.eyeBtn}>
                   <Text style={styles.eyeText}>{showPass ? 'Hide' : 'Show'}</Text>
                 </Pressable>
@@ -63,7 +63,7 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          <Button title="Create account" onPress={() => register({ name: name.trim(), email: email.trim(), password })} loading={loading} disabled={!isValid} size="lg" style={{ marginBottom: spacing.lg }} />
+          <Button title="Create account" onPress={() => register({ firstName: firstName.trim(), email: email.trim(), password })} loading={loading} disabled={!isValid} size="lg" style={{ marginBottom: spacing.lg }} />
 
           <Text style={styles.terms}>
             By creating an account you agree to our <Text style={styles.termsLink}>Terms</Text> and <Text style={styles.termsLink}>Privacy Policy</Text>

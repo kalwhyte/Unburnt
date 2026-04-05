@@ -1,119 +1,3 @@
-// import { useState } from 'react'
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-// import { useRouter } from 'expo-router'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { useOnboardingStore } from '../../src/store/onboardingStore'
-// import { StepIndicator } from '../../src/components/common/StepIndicator'
-// import { colors, T } from '../../src/constants/theme'
-
-// const TRIGGERS = ['Morning', 'After meals', 'Stress', 'Social', 'Driving', 'Alcohol']
-
-// export default function SmokingHabitsScreen() {
-//   const router = useRouter()
-//   const { setProfile } = useOnboardingStore()
-//   const [cigsPerDay, setCigsPerDay] = useState('')
-//   const [years, setYears] = useState('')
-//   const [costPerPack, setCostPerPack] = useState('')
-//   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([])
-
-//   const toggle = (t: string) =>
-//     setSelectedTriggers(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
-
-//   const onNext = () => {
-//     setProfile({ 
-//       cigsPerDay: Number(cigsPerDay), 
-//       years: Number(years), 
-//       costPerPack: Number(costPerPack), 
-//       triggers: selectedTriggers 
-//     })
-//     router.push('/(onboarding)/reasons')
-//   }
-
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <StepIndicator current={0} total={5} />
-//       <ScrollView contentContainerStyle={s.body} keyboardShouldPersistTaps="handled">
-//         <Text style={s.title}>Your smoking profile</Text>
-//         <Text style={s.sub}>Help us personalise your plan</Text>
-
-//         <View style={s.field}>
-//           <Text style={s.label}>Cigarettes per day</Text>
-//           <TextInput 
-//             style={s.input} 
-//             value={cigsPerDay} 
-//             onChangeText={setCigsPerDay} 
-//             keyboardType="number-pad" 
-//             placeholder="e.g. 15" 
-//             placeholderTextColor={colors.textDim} 
-//           />
-//         </View>
-//         <View style={s.field}>
-//           <Text style={s.label}>Years smoking</Text>
-//           <TextInput 
-//             style={s.input} 
-//             value={years} 
-//             onChangeText={setYears} 
-//             keyboardType="number-pad" 
-//             placeholder="e.g. 5" 
-//             placeholderTextColor={colors.textDim} 
-//           />
-//         </View>
-//         <View style={s.field}>
-//           <Text style={s.label}>Cost per pack (₦)</Text>
-//           <TextInput 
-//             style={s.input} 
-//             value={costPerPack} 
-//             onChangeText={setCostPerPack} 
-//             keyboardType="number-pad" 
-//             placeholder="e.g. 800" 
-//             placeholderTextColor={colors.textDim} 
-//           />
-//         </View>
-//         <View style={s.field}>
-//           <Text style={s.label}>When do you smoke most?</Text>
-//           <View style={s.chips}>
-//             {TRIGGERS.map(t => (
-//               <TouchableOpacity key={t} style={[s.chip, selectedTriggers.includes(t) && s.chipSel]} onPress={() => toggle(t)}>
-//                 <Text style={[s.chipText, selectedTriggers.includes(t) && s.chipTextSel]}>{t}</Text>
-//               </TouchableOpacity>
-//             ))}
-//           </View>
-//         </View>
-//       </ScrollView>
-//       <View style={s.footer}>
-//         <TouchableOpacity style={s.btnPrimary} onPress={onNext}>
-//           <Text style={s.btnPrimaryText}>Continue</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   body: { padding: 20 },
-//   title: { ...T.h1, color: colors.textPrimary, marginBottom: 8 },
-//   sub: { ...T.body, color: colors.textMuted, marginBottom: 20 },
-//   field: { marginBottom: 20 },
-//   label: { ...T.bodyMedium, color: colors.textPrimary, marginBottom: 6 },
-//   input: { 
-//     backgroundColor: colors.surface, 
-//     paddingHorizontal: 15, 
-//     height: 48, 
-//     borderRadius: 10, 
-//     color: colors.textPrimary, 
-//     ...T.body 
-//   },
-//   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-//   chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.surface },
-//   chipSel: { backgroundColor: colors.teal },
-//   chipText: { ...T.body, color: colors.textPrimary },
-//   chipTextSel: { color: colors.textPrimary },
-//   footer: { padding: 20 },
-//   btnPrimary: { backgroundColor: colors.teal, borderRadius: 12, height: 52, alignItems: 'center', justifyContent: 'center' },
-//   btnPrimaryText: { ...T.bodyMedium, color: colors.textPrimary },
-// })
-
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -145,7 +29,7 @@ const BRAND_OPTIONS = [
 
 export default function SmokingHabitsScreen() {
   const router = useRouter()
-  const { setProfile } = useOnboardingStore()
+  const setField = useOnboardingStore((s) => s.setField)
   const [times, setTimes]   = useState<string[]>([])
   const [brand, setBrand]   = useState('')
 
@@ -153,8 +37,8 @@ export default function SmokingHabitsScreen() {
     setTimes(prev => prev.includes(v) ? prev.filter(t => t !== v) : [...prev, v])
 
   const handleNext = () => {
-    // @ts-ignore - updating profile with habit data
-    setProfile({ smokingTimes: times, cigaretteType: brand })
+    setField('smokingTimes', times)
+    setField('cigaretteType', brand)
     router.push('/(onboarding)/triggers')
   }
 

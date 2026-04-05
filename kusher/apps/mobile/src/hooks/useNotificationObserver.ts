@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
-// import { Platform } from 'react-native';
-// import { useRouter } from 'expo-router';
 import { getNotifications, markOneRead, markAllRead, deleteNotification } from '@/services/api/notifications';
 
 export function useNotificationFeed() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  // const router = useRouter();
 
   const fetchNotifications = async () => {
     try {
@@ -45,40 +41,5 @@ export function useNotificationFeed() {
   useEffect(() => {
     fetchNotifications();
   }, []);
-
-  // useEffect(() => {
-  //   if (Platform.OS === 'web') return;
-  //   let foregroundSub: any;
-  //   let responseSub: any;
-
-  //   const setup = async () => {
-  //     try {
-  //       const Notifications = await import('expo-notifications');
-  //       foregroundSub = Notifications.addNotificationReceivedListener((notification) => {
-  //         console.log('Notification received in foreground:', notification);
-  //       });
-
-  //       responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
-  //         const data = response.notification.request.content.data as Record<string, any> | undefined;
-  //         if (data?.screen) router.push(data.screen as never);
-  //       });
-  //     } catch (error) {
-  //       console.error('Failed to set up notification listeners:', error);
-  //     }
-  //   };
-
-    // try {
-    //   foregroundSub = Notifications.addNotificationReceivedListener((notification) => {
-    //     console.log('Notification received in foreground:', notification)
-    //   })
-
-    //   responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
-    //     const data = response.notification.request.content.data as Record<string, any> | undefined
-    //     if (data?.screen) router.push(data.screen as never)
-    //   })
-    //   } catch (_) {
-    //     console.error('Failed to navigate on notification tap:', _);
-    //   }
-
     return { notifications, unreadCount, loading, refresh: fetchNotifications, readOne, readAll, remove };
 }

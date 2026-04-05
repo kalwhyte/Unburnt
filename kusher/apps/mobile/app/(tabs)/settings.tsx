@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Pressable, Switch, Alert } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, ScrollView, Pressable, Switch, Alert, ActivityIndicator, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import { useAuthStore } from '../../src/store/useAuthStore'
+import { getProfile } from '../../src/services/api/profile'
+import { getNotificationPreferences, updateNotificationPreferences } from '../../src/services/api/notifications'
+import { updateQuitPlan } from '../../src/services/api/quitPlans'
 
 function Row({ icon, label, value, onPress, toggle, toggled, destructive, hint }: {
   icon: string; label: string; value?: string; onPress?: () => void
@@ -39,16 +42,127 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function SettingsScreen() {
   const router = useRouter()
   const { user, clearAuth } = useAuthStore()
-  const [notifDaily,     setNotifDaily]     = useState(true)
-  const [notifCraving,   setNotifCraving]   = useState(true)
-  const [notifMilestone, setNotifMilestone] = useState(true)
-  const [haptics,        setHaptics]        = useState(true)
+
+  const [profile, setProfile] = useState<any>(null)
+  const [notifPrefs, setNotifPrefs] = useState({
+    morningReminder:      true,
+    triggerWindowReminder: true,
+    streakUpdates:        true,
+    milestoneAlerts:      true,
+    missedLogReminders:   true,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true)
+      const [profileData, prefsData] = await Promise.all([
+        getProfile(),
+        getNotificationPreferences(),
+      ])
+      setProfile(profileData)
+      setNotifPrefs({
+        morningReminder:       prefsData.morningReminder      ?? true,
+        triggerWindowReminder: prefsData.triggerWindowReminder ?? true,
+        streakUpdates:         prefsData.streakUpdates         ?? true,
+        milestoneAlerts:       prefsData.milestoneAlerts       ?? true,
+        missedLogReminders:    prefsData.missedLogReminders    ?? true,
+      })
+    } catch (err) {
+      console.error('Failed to load settings', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const toggleNotif = async (key: keyof typeof notifPrefs) => {
+    const updated = { ...notifPrefs, [key]: !notifPrefs[key] }
+    setNotifPrefs(updated)
+    try {
+      await updateNotificationPreferences({ [key]: updated[key] })
+    } catch (err) {
+      // revert on failure
+      setNotifPrefs(notifPrefs)
+    }
+  }
 
   const handleSignOut = () => {
+    const performSignOut = () => {
+      clearAuth()
+      router.replace('/(auth)/welcome')
+    }
+
+    if (Platform.OS === 'web') {
+      if (confirm('Are you sure you want to sign out?')) {
+        performSignOut()
+      }
+      return
+    }
+
     Alert.alert('Sign out', 'Your progress is saved to your account.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: () => { clearAuth(); router.replace('/(auth)/welcome') } },
+      { text: 'Sign out', style: 'destructive', onPress: performSignOut },
     ])
+  }
+
+  const formatQuitDate = () => {
+    if (!profile?.quitDate) return 'Not set'
+    return new Date(profile.quitDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  const handleEditPackCost = () => {
+    Alert.prompt(
+      'Cost per pack',
+      'Enter your pack cost in ₦',
+      async (value) => {
+        const num = parseFloat(value || '');
+        if (isNaN(num)) return;
+        try {
+          await updateQuitPlan({ packPrice: num });
+          setProfile((prev: any) => ({ ...prev, packCost: num }));
+        } catch (err) {
+          Alert.alert('Error', 'Failed to update pack cost');
+        }
+      },
+      'plain-text',
+      String(profile?.packCost ?? ''),
+      'numeric'
+    );
+  };
+
+  const handleEditCigsPerDay = () => {
+    Alert.prompt(
+      'Cigarettes per day',
+      'How many cigarettes do you smoke per day?',
+      async (value) => {
+        const num = parseInt(value || '');
+        if (isNaN(num)) return;
+        try {
+          await updateQuitPlan({ dailyCigarettes: num });
+          setProfile((prev: any) => ({ ...prev, cigarettesPerDay: num }));
+        } catch (err) {
+          Alert.alert('Error', 'Failed to update cigarettes per day');
+        }
+      },
+      'plain-text',
+      String(profile?.cigarettesPerDay ?? ''),
+      'numeric'
+    );
+  };
+  
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator color={colors.teal} />
+        </View>
+      </SafeAreaView>
+    )
   }
 
   return (
@@ -56,46 +170,48 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.pageTitle}>Settings</Text>
 
-        <Pressable style={styles.profileCard} onPress={() => {}}>
+        <Pressable style={styles.profileCard} onPress={() => router.push('/profile')}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{(user?.name ?? 'U')[0].toUpperCase()}</Text>
+            <Text style={styles.avatarText}>{(profile?.firstName ?? user?.firstName ?? 'U')[0].toUpperCase()}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.profileName}>{user?.name ?? 'User'}</Text>
-            <Text style={styles.profileEmail}>{user?.email ?? ''}</Text>
+            <Text style={styles.profileName}>{profile?.firstName ?? user?.firstName ?? 'User'}</Text>
+            <Text style={styles.profileEmail}>{profile?.email ?? user?.email ?? ''}</Text>
           </View>
           <Text style={styles.chevron}>›</Text>
         </Pressable>
 
         <Section title="Quit plan">
-          <Row icon="📅" label="Quit date"          value="Jan 1, 2025" onPress={() => {}} />
-          <Row icon="🎯" label="My reasons to quit"                     onPress={() => {}} />
-          <Row icon="💰" label="Cost per pack"       value="$12.00"      onPress={() => {}} />
+          <Row icon="📅" label="Quit date"         value={formatQuitDate()}              onPress={() => router.push('/profile')} />
+          <Row icon="🚬" label="Cigarettes per day" value={`${profile?.cigarettesPerDay ?? 0}/day`} onPress={() => router.push('/profile')} />
+          <Row icon="💰" label="Cost per pack"      value={`₦${profile?.packCost ?? 0}`}      onPress={() => router.push('/profile')} />
+          <Row icon="🎯" label="Quit goal"          value={profile?.quitGoal?.replace('_', ' ') ?? 'Not set'} onPress={() => router.push('/profile')} />
         </Section>
 
         <Section title="Notifications">
-          <Row icon="🌅" label="Daily check-in"    hint="Morning motivation"      toggle toggled={notifDaily}     onPress={() => setNotifDaily(v => !v)} />
-          <Row icon="🚨" label="Craving alerts"    hint="At peak craving times"   toggle toggled={notifCraving}   onPress={() => setNotifCraving(v => !v)} />
-          <Row icon="🏆" label="Milestone alerts"  hint="Celebrate every win"     toggle toggled={notifMilestone} onPress={() => setNotifMilestone(v => !v)} />
+          <Row icon="🌅" label="Morning reminder"    hint="Daily check-in at 9am"         toggle toggled={notifPrefs.morningReminder}       onPress={() => toggleNotif('morningReminder')} />
+          <Row icon="⏰" label="Peak hour alerts"    hint="At your craving danger zones"   toggle toggled={notifPrefs.triggerWindowReminder} onPress={() => toggleNotif('triggerWindowReminder')} />
+          <Row icon="🔥" label="Streak updates"      hint="Keep your streak going"         toggle toggled={notifPrefs.streakUpdates}         onPress={() => toggleNotif('streakUpdates')} />
+          <Row icon="🏆" label="Milestone alerts"    hint="Celebrate every win"            toggle toggled={notifPrefs.milestoneAlerts}       onPress={() => toggleNotif('milestoneAlerts')} />
+          <Row icon="📝" label="Log reminders"       hint="Remind you to log daily"        toggle toggled={notifPrefs.missedLogReminders}    onPress={() => toggleNotif('missedLogReminders')} />
         </Section>
 
         <Section title="App">
-          <Row icon="📳" label="Haptic feedback" toggle toggled={haptics} onPress={() => setHaptics(v => !v)} />
-          <Row icon="🌙" label="Appearance"      value="Dark"             onPress={() => {}} />
-          <Row icon="📊" label="Data & privacy"                           onPress={() => {}} />
-          <Row icon="📤" label="Export my data"                           onPress={() => {}} />
+          <Row icon="🌙" label="Appearance"      value="Dark"  onPress={() => {}} />
+          <Row icon="📊" label="Data & privacy"               onPress={() => {}} />
+          <Row icon="📤" label="Export my data"               onPress={() => {}} />
         </Section>
 
         <Section title="Support">
-          <Row icon="💬" label="Get help"       onPress={() => router.push('/(tabs)/support')} />
-          <Row icon="⭐" label="Rate the app"   onPress={() => {}} />
+          <Row icon="💬" label="Get help"        onPress={() => router.push('/(tabs)/support')} />
+          <Row icon="⭐" label="Rate the app"    onPress={() => {}} />
           <Row icon="📋" label="Terms & Privacy" onPress={() => {}} />
-          <Row icon="ℹ️" label="App version"    value="1.0.0" />
+          <Row icon="ℹ️" label="App version"     value="1.0.0" />
         </Section>
 
         <Section title="Account">
-          <Row icon="🚪" label="Sign out"        destructive onPress={handleSignOut} />
-          <Row icon="🗑️" label="Delete account"  destructive onPress={() => {}} />
+          <Row icon="🚪" label="Sign out"       destructive onPress={handleSignOut} />
+          <Row icon="🗑️" label="Delete account" destructive onPress={() => {}} />
         </Section>
       </ScrollView>
     </SafeAreaView>

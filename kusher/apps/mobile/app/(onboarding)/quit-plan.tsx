@@ -1,92 +1,3 @@
-// import { useState } from 'react'
-// import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-// import { useRouter } from 'expo-router'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { useOnboardingStore } from '../../src/store/onboardingStore'
-// import { StepIndicator } from '../../src/components/common/StepIndicator'
-// import { colors, T } from '../../src/constants/theme'
-
-// const PLANS = [
-//   {
-//     id: 'cold-turkey',
-//     title: 'Cold Turkey',
-//     description: 'Stop smoking completely on your chosen quit date. Most effective for long-term success.',
-//     icon: '❄️',
-//   },
-//   {
-//     id: 'gradual',
-//     title: 'Gradual Reduction',
-//     description: 'Slowly reduce the number of cigarettes daily until your quit date.',
-//     icon: '📉',
-//   },
-//   {
-//     id: 'nrt',
-//     title: 'NRT Assisted',
-//     description: 'Use Nicotine Replacement Therapy (patches, gum) to manage withdrawal.',
-//     icon: '💊',
-//   },
-// ] as const
-
-// export default function QuitPlanScreen() {
-//   const router = useRouter()
-//   const { setQuitPlan, quitPlan } = useOnboardingStore()
-//   const [selected, setSelected] = useState<typeof PLANS[number]['id'] | null>(quitPlan)
-
-//   const onNext = () => {
-//     if (selected) {
-//       setQuitPlan(selected)
-//       router.push('/(onboarding)/quit-date')
-//     }
-//   }
-
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <StepIndicator current={2} total={5} />
-//       <ScrollView contentContainerStyle={s.body}>
-//         <Text style={s.title}>Choose your strategy</Text>
-//         <Text style={s.sub}>Select the method that fits your lifestyle best.</Text>
-
-//         <View style={s.planList}>
-//           {PLANS.map((plan) => (
-//             <TouchableOpacity
-//               key={plan.id}
-//               style={[s.planCard, selected === plan.id && s.planCardSel]}
-//               onPress={() => setSelected(plan.id)}
-//             >
-//               <Text style={s.planIcon}>{plan.icon}</Text>
-//               <View style={s.planInfo}>
-//                 <Text style={s.planTitle}>{plan.title}</Text>
-//                 <Text style={s.planDesc}>{plan.description}</Text>
-//               </View>
-//             </TouchableOpacity>
-//           ))}
-//         </View>
-
-//         <TouchableOpacity style={[s.nextButton, !selected && s.nextButtonDisabled]} onPress={onNext} disabled={!selected}>
-//           <Text style={s.nextButtonText}>Next</Text>
-//         </TouchableOpacity>
-//       </ScrollView>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   body: { padding: 20, flexGrow: 1, justifyContent: 'space-between' },
-//   title: { ...T.h1, color: colors.textPrimary },
-//   sub: { ...T.body, color: colors.textMuted, marginBottom: 20 },
-//   planList: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-//   planCard: { width: '100%', backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', borderWidth: 2, borderColor: 'transparent' },
-//   planCardSel: { borderColor: colors.teal },
-//   planIcon: { fontSize: 24 },
-//   planInfo: { marginLeft: 12 },
-//   planTitle: { ...T.bodyMedium, color: colors.textPrimary },
-//   planDesc: { ...T.bodySmall, color: colors.textMuted },
-//   nextButton: { backgroundColor: colors.teal, borderRadius: 12, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 20 },
-//   nextButtonDisabled: { backgroundColor: colors.tealLight },
-//   nextButtonText: { ...T.bodyMedium, color: colors.textPrimary },
-// })
-
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -124,18 +35,21 @@ const PACK_PRICES = ['$8', '$10', '$12', '$15', '$18', '$20+']
 
 export default function QuitPlanScreen() {
   const router = useRouter()
-  const { setProfile } = useOnboardingStore()
+  const { setField } = useOnboardingStore()
 
   const [strategy, setStrategy]   = useState('gradual')
   const [quitDate, setQuitDate]   = useState<'today' | 'week' | 'custom'>('week')
   const [packPrice, setPackPrice] = useState('$12')
 
   const handleNext = () => {
-    setProfile({
-      ...useOnboardingStore.getState().profile,
-      costPerPack: parseInt(packPrice.replace(/[^0-9]/g, '')) || 0,
-      // @ts-ignore - strategy and quitDateChoice are extended profile fields
-      strategy, quitDateChoice: quitDate
+    setField('packPrice', packPrice)
+    setField('strategy', strategy)
+    setField('quitDateChoice', quitDate)
+    // @ts-ignore - adding quit plan data to profile
+    setField({
+      quitPlan: {
+        strategy, quitDateChoice: quitDate
+      }
     })
     router.push('/(onboarding)/notifications-opt-in')
   }

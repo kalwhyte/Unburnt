@@ -13,7 +13,6 @@ async function bootstrap() {
   const app = await NestFactory.create(
     AppModule, {
     logger: WinstonModule.createLogger(winstonLoggerOptions),
-    // logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   }
 );
 
@@ -29,7 +28,6 @@ async function bootstrap() {
 
   app.enableCors();
 
-    // Request logging middleware
   app.use((req: any, res: any, next: () => void) => {
     const start = Date.now();
     res.on('finish', () => {
@@ -44,7 +42,6 @@ async function bootstrap() {
   const port = configService.get<number>('app.port') || 3000;
   await app.listen(port);
 
-  // Hacker style startup logs
   console.log('\x1b[36m');
   console.log('=======================================');
   console.log('      SYSTEM INITIALIZED');
@@ -54,12 +51,9 @@ async function bootstrap() {
   console.log(chalk.yellow('[WARN] Unauthorized request'));
   console.log(chalk.cyan('[INFO] New connection'));
   console.log(` URL: http://localhost:${port}`);
-  // console.log(chalk.red('[ERROR] Database failed'));
   console.log(chalk.green(' DATABASE: CONNECTED'));
   console.log(' STATUS: OPERATIONAL');
   console.log('=======================================');
   console.log('\x1b[0m');
-
-  // logger.log(`Application running on http://localhost:${port}`);
 }
 bootstrap();

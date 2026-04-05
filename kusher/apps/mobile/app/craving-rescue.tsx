@@ -1,6 +1,5 @@
-
 import React, { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, Animated, Platform, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../src/constants/theme'
@@ -19,7 +18,7 @@ export default function CravingRescueScreen() {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 300, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 300, useNativeDriver: Platform.OS === 'web' ? false : true }),
       Animated.spring(slideAnim, { toValue: 0, tension: 80, friction: 10, useNativeDriver: true }),
     ]).start()
   }, [])
@@ -54,7 +53,7 @@ export default function CravingRescueScreen() {
           <Text style={styles.sectionLabel}>Choose a rescue technique</Text>
           <View style={styles.techniques}>
             {TECHNIQUES.map((t) => (
-              <Pressable key={t.id} style={styles.techniqueCard} onPress={() => router.push(t.route as any)}>
+              <Pressable key={t.id} style={styles.techniqueCard} onPress={() => router.push(t.route)}>
                 <View style={styles.techniqueIcon}><Text style={{ fontSize: 22 }}>{t.icon}</Text></View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.techniqueTitle}>{t.title}</Text>
