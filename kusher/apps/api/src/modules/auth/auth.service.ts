@@ -30,7 +30,7 @@ export class AuthService {
       },
     });
 
-    return this.generateToken(user.id, user.email )
+    return this.generateToken(user.id, user.email, user.firstName ?? undefined);
   }
 
   async login(dto: any) {
@@ -48,16 +48,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.generateToken(user.id, user.email);
+    return this.generateToken(user.id, user.email, user.firstName ?? undefined, user.lastName ?? undefined, user.avatarUrl ?? undefined);
   }
 
-  private async generateToken(userId: string, email: string) {
+  private async generateToken(userId: string, email: string, firstName?: string, lastName?: string, avatarUrl?: string) {
     const payload = { sub: userId, email };
     return {
       access_token: await this.jwtService.signAsync(payload),
       user: {
         id: userId,
         email,
+        firstName: firstName ?? null,
+        lastName: lastName ?? null,
+        avatarUrl: avatarUrl ?? null,
       },
     };
   }

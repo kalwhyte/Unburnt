@@ -6,6 +6,13 @@ export const getProfile = async () => {
 };
 
 export const updateProfile = async (data: {
+  bio?: string;
+  smokerSince?: string;
+  cigarettesPerDay?: number;
+  packCost?: number;
+  yearsSmoking?: number;
+  quitDate?: string;
+  timezone?: string;
   displayName?: string;
   avatarUrl?: string;
 }) => {

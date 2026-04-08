@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import Card from '../../src/components/common/Card'
 import { useInsights } from '../../src/hooks/useInsights'
@@ -38,6 +39,10 @@ function PatternsTab({ data }: { data: any }) {
   const maxTotal = Math.max(...byHour.map((h: any) => h.total), 1)
   const trend = reduction?.trend ?? []
   const maxWeek = Math.max(...trend.map((w: any) => w.total), 1)
+
+  const willpowerData = willpower?.data ?? []
+  const maxWillpower = Math.max(...willpowerData.map((w: any) => w.total), 1)
+ 
 
   return (
     <View>
@@ -234,6 +239,12 @@ function MoodTab({ data }: { data: any }) {
 export default function InsightsScreen() {
   const [tab, setTab] = useState<Tab>('patterns')
   const { data, loading, error, refresh } = useInsights()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>

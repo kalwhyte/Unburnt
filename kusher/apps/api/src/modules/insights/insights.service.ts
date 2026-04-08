@@ -191,7 +191,7 @@ export class InsightsService {
   async getReductionTrend(userId: string) {
     const WEEKS   = 6;
     const now     = new Date();
-    const profile = await this.prisma.profile.findUnique({
+    const profile = await this.prisma.profile.findFirst({
       where:  { userId },
       select: { cigarettesPerDay: true },
     });
@@ -251,7 +251,7 @@ export class InsightsService {
   // ─── Summary — all insights in one call ───────────────────────────────────
 
   async getSummary(userId: string) {
-    const [triggers, mood, peakHours, cravingVsSmoking, reduction] = await Promise.all([
+    const [triggerData, mood, peakHours, cravingVsSmoking, reduction] = await Promise.all([
       this.getTriggerInsights(userId),
       this.getMoodInsights(userId),
       this.getPeakHours(userId),
@@ -259,7 +259,17 @@ export class InsightsService {
       this.getReductionTrend(userId),
     ]);
 
-    return { triggers, mood, peakHours, cravingVsSmoking, reduction };
+    return {
+      triggers: {
+        triggers: triggerData.triggers.slice(0, 3), // top 3 triggers
+        topTrigger: triggerData.topTrigger,
+        hardest: triggerData.hardest,
+      },
+      mood,
+      peakHours,
+      cravingVsSmoking,
+      reduction
+    };
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────

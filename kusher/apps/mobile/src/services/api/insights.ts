@@ -9,3 +9,8 @@ export const getDailyCravings = async () => {
   const res = await api.get("/cravings/summary/daily");
   return res.data;
 };
+
+export const getTriggerInsights = async () => {
+  const res = await api.get("/insights/triggers");
+  return res.data;
+};

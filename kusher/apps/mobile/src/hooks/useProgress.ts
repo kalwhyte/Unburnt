@@ -43,13 +43,6 @@ export function useProgress(period: '7d' | '30d' | '3m') {
           console.error(`Call ${i} failed:`, r.reason?.response?.status, r.reason?.message);
         }
       });
-      // const [dashboard, savings, timeline, dailyCravings, insights] = await Promise.all([
-      //   getDashboard().catch(e => { console.error('Dashboard error:', e); return null; }),
-      //   getSavingsData().catch(e => { console.error('Savings error:', e); return null; }),
-      //   getHealthTimeline().catch(e => { console.error('Timeline error:', e); return null; }),
-      //   getDailyCravings().catch(e => { console.error('Daily cravings error:', e); return null; }),
-      //   getInsightsSummary().catch(e => { console.error('Insights error:', e); return null; }),
-      // ]);
 
       const streakHours = dashboard?.data?.currentStreakHours ?? 0;
       const streakDays  = Math.floor(streakHours / 24);

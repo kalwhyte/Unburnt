@@ -57,26 +57,41 @@ export default function EditProfileScreen() {
   const set = (key: keyof typeof form) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
-  const handleSave = async () => {
-    try {
-      setSaving(true)
-      await Promise.all([
-        updateProfile({
-          displayName: form.bio || undefined, // Mapping bio to displayName or update API if needed
-        }),
-        updateQuitPlan({
-          dailyCigarettes: form.cigarettesPerDay ? parseInt(form.cigarettesPerDay) : undefined,
-          packPrice: form.packCost ? parseFloat(form.packCost) : undefined,
-          startDate: form.quitDate || undefined,
+    const handleSave = async () => {
+      try {
+        setSaving(true)
+        await updateProfile({
+          cigarettesPerDay: form.cigarettesPerDay ? parseInt(form.cigarettesPerDay) : undefined,
+          packCost:         form.packCost ? parseFloat(form.packCost) : undefined,
+          yearsSmoking:     form.yearsSmoking ? parseInt(form.yearsSmoking) : undefined,
+          quitDate:         form.quitDate ? new Date(form.quitDate).toISOString() : undefined,
+          bio:              form.bio || undefined,
         })
-      ])
-      router.back()
-    } catch (err) {
-      Alert.alert('Failed to save', 'Please try again.')
-    } finally {
-      setSaving(false)
+        router.replace('/profile')
+      } catch (err) {
+        Alert.alert('Failed to save', 'Please try again.')
+      } finally {
+        setSaving(false)
+      }
     }
-  }
+  //   const handleSave = async () => {
+  //   try {
+  //     setSaving(true)
+  //       await Promise.all([
+  //         updateProfile({ displayName: form.bio || undefined }),
+  //         updateQuitPlan({
+  //           dailyCigarettes: form.cigarettesPerDay ? parseInt(form.cigarettesPerDay) : undefined,
+  //           packPrice: form.packCost ? parseFloat(form.packCost) : undefined,
+  //           startDate: form.quitDate || undefined,
+  //         })
+  //       ])
+  //     router.replace('/profile')
+  //   } catch (err) {
+  //     Alert.alert('Failed to save', 'Please try again.')
+  //   } finally {
+  //     setSaving(false)
+  //   }
+  // }
 
   if (loading) {
     return (

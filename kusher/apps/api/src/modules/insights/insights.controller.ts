@@ -12,8 +12,8 @@ export class InsightsController {
    * All insights in one call — use this for the insights screen
    */
   @Get('summary')
-  async getSummary(@Request() req: any) {
-    return this.insightsService.getSummary(req.user.userId);
+  async getSummary(userId: string) {
+    return this.insightsService.getSummary(userId);
   }
 
   /**

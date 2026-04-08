@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "kusher-app",
-    "slug": "kusher-app",
+    "slug": "kusher",
     "scheme": "kusher",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -38,12 +38,15 @@
       "tsconfigPaths": true
     },
     "packagerOpts": {
-      "projectRoots": ["./"]
+      "projectRoots": [
+        "./"
+      ]
     },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "4f177301-a19f-49f9-a690-30fa44ed503d",
+        "projectId": "5adb209d-7d34-49da-aec2-347e2bda460f",
+
         "buildRoot": "apps/mobile"
       }
     }

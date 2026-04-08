@@ -49,7 +49,7 @@ export default function LogSmokingScreen() {
         <View style={styles.header}>
           <View style={styles.smokeIcon}><Text style={{ fontSize: 28 }}>🚬</Text></View>
           <View>
-            <Text style={styles.heading}>Log a smoke</Text>
+            <Text style={styles.heading}>Log a Smoke</Text>
             <Text style={styles.sub}>No judgement. Data helps you improve.</Text>
           </View>
         </View>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   regretBtnActive:   { backgroundColor: colors.tealBg, borderColor: colors.teal },
   regretText:        { ...T.bodySmall, color: colors.textMuted },
   regretTextActive:  { color: colors.tealLight },
-  notesInput:        { backgroundColor: colors.bg, borderWidth: 0.5, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, ...T.body, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top' },
+  notesInput:        { backgroundColor: colors.bg, borderWidth: 0.5, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, ...T.body, color: colors.textPrimary, minHeight: 180, textAlignVertical: 'top' },
   optional:          { fontWeight: '400', color: colors.textDim },
   cancelBtn:         { alignItems: 'center', paddingVertical: spacing.lg },
   cancelText:        { ...T.bodySmall, color: colors.textDim },

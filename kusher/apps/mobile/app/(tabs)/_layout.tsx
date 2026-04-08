@@ -2,6 +2,7 @@
 import { colors, T } from '../../src/constants/theme'
 import { HomeIcon, ChartIcon, InsightsIcon, SettingsIcon} from '../../src/components/common/Icons'
 import { Tabs } from 'expo-router'
+import { useFocusEffect } from 'expo-router/build/exports'
 
 export default function TabsLayout() {
   return (

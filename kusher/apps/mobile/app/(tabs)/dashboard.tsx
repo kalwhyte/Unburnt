@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Pressable, RefreshControl, Animated, Dimensions } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
@@ -31,6 +31,61 @@ function formatTime({ minutes }: { minutes: number }) {
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`
 }
 
+function FadeInUpView({ children, delay = 0, style }: any) {
+  const fadeAnim = useRef(new Animated.Value(0)).current
+  const slideAnim = useRef(new Animated.Value(20)).current
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [])
+
+  return (
+    <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }, style]}>
+      {children}
+    </Animated.View>
+  )
+}
+
+function ScaleInView({ children, delay = 0 }: any) {
+  const scaleAnim = useRef(new Animated.Value(0.9)).current
+  const fadeAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 500,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [])
+
+  return (
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ scale: scaleAnim }] }}>
+      {children}
+    </Animated.View>
+  )
+}
 export default function DashboardScreen() {
   const router = useRouter()
   const { user } = useAuthStore()
@@ -46,21 +101,25 @@ export default function DashboardScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good {timeOfDay()}, {firstName} 👋</Text>
-            <Text style={styles.date}>{formatDate()}</Text>
-          </View>
+          <FadeInUpView delay={0}>
+            <View>
+              <Text style={styles.greeting}>Good {timeOfDay()}, {firstName} 👋</Text>
+              <Text style={styles.date}>{formatDate()}</Text>
+            </View>
+          </FadeInUpView>
           <Pressable onPress={() => router.push('/(tabs)/settings')} style={styles.avatarBtn}>
             <Text style={styles.avatarText}>{(user?.firstName ?? 'U')[0].toUpperCase()}</Text>
           </Pressable>
         </View>
 
         {/* Streak hero */}
-        <Card variant="teal" style={styles.streakCard}>
-          <Text style={styles.streakLabel}>Current streak</Text>
-          <Text style={styles.streakValue}>{streak ?? 0}</Text>
-          <Text style={styles.streakUnit}>days smoke-free</Text>
-        </Card>
+        <ScaleInView delay={100}>
+          <Card variant="teal" style={styles.streakCard}>
+            <Text style={styles.streakLabel}>Current streak</Text>
+            <Text style={styles.streakValue}>{streak ?? 0}</Text>
+            <Text style={styles.streakUnit}>days smoke-free</Text>
+          </Card>
+        </ScaleInView>
 
         {/* Stats grid */}
         <View style={styles.statsGrid}>
@@ -69,48 +128,58 @@ export default function DashboardScreen() {
             { label: 'Money saved',    value: `₦${moneySaved?.toLocaleString() ?? '0'}`, sub: 'total' },
             { label: 'Life regained',  value: `${lifeRegained ?? 0}h`, sub: 'of your life' },
             { label: 'Health Score',   value: `${nextMilestone?.progressPercent ?? 0}%`, sub: nextMilestone?.name ?? 'loading' },
-          ].map((s) => (
-            <View key={s.label} style={styles.statCard}>
-              <Text style={styles.statValue}>{s.value}</Text>
-              <Text style={styles.statLabel}>{s.label}</Text>
-              <Text style={styles.statSub}>{s.sub}</Text>
-            </View>
+          ].map((s, i) => (
+              <View key={s.label} style={styles.statCard}>
+                <Text style={styles.statValue}>{s.value}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+                <Text style={styles.statSub}>{s.sub}</Text>
+              </View>
           ))}
         </View>
 
         {/* Quick actions */}
-        <Text style={styles.sectionTitle}>Quick actions</Text>
-        <View style={styles.quickActions}>
-          {[
-            { icon: '🚨', label: 'Craving SOS', route: '/craving-rescue',      danger: true },
-            { icon: '🚬', label: 'Log smoke',   route: '/logs/smoking',         danger: false },
-            { icon: '📝', label: 'Log craving', route: '/logs/craving',         danger: false },
-            { icon: '📊', label: 'Insights',    route: '/(tabs)/insights',      danger: false },
-          ].map((a) => (
-            <Pressable key={a.label} style={[styles.quickAction, a.danger && styles.quickActionDanger]} onPress={() => router.push(a.route as any)}>
-              <Text style={{ fontSize: 22 }}>{a.icon}</Text>
-              <Text style={[styles.quickLabel, a.danger && styles.quickLabelDanger]}>{a.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <FadeInUpView delay={300}>
+          <>
+            <Text style={styles.sectionTitle}>Quick actions</Text>
+            <View style={styles.quickActions}>
+              {[
+                { icon: '🚨', label: 'Craving SOS', route: '/craving-rescue',      danger: true },
+                { icon: '🚬', label: 'Log smoke',   route: '/logs/smoking',         danger: false },
+                { icon: '📝', label: 'Log craving', route: '/logs/craving',         danger: false },
+                { icon: '📊', label: 'Insights',    route: '/(tabs)/insights',      danger: false },
+              ].map((a) => (
+                  <Pressable key={a.label} style={[styles.quickAction, a.danger && styles.quickActionDanger]} onPress={() => router.push(a.route as any)}>
+                    <Text style={{ fontSize: 22 }}>{a.icon}</Text>
+                    <Text style={[styles.quickLabel, a.danger && styles.quickLabelDanger]}>{a.label}</Text>
+                  </Pressable>
+              ))}
+            </View>
+          </>
+        </FadeInUpView>
 
         {/* Health timeline */}
-        <Text style={styles.sectionTitle}>Health recovery</Text>
-        <Card style={{ padding: 0, overflow: 'hidden', marginBottom: spacing.xxl }}>
-          {HEALTH_MILESTONES.map((m, i) => {
-            const reached = (streak * 24) >= m.hours
-            return (
-              <View key={m.label} style={[styles.milestone, i < HEALTH_MILESTONES.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colors.borderSoft }]}>
-                <View style={[styles.milestoneDot, reached && styles.milestoneDotActive]} />
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.milestoneLabel, reached && { color: colors.textPrimary }]}>{m.label}</Text>
-                  <Text style={styles.milestoneDesc}>{m.desc}</Text>
-                </View>
-                {reached && <Text style={{ color: colors.teal, fontSize: 14 }}>✓</Text>}
-              </View>
-            )
-          })}
-        </Card>
+        <FadeInUpView delay={500}>
+          <>
+            <Text style={styles.sectionTitle}>Health recovery</Text>
+            <Card style={{ padding: 0, overflow: 'hidden', marginBottom: spacing.xxl }}>
+              {HEALTH_MILESTONES.map((m, i) => {
+                const reached = (streak * 24) >= m.hours
+                return (
+                  <FadeInUpView key={m.label} delay={520 + i * 80}>
+                    <View key={m.label} style={[styles.milestone, i < HEALTH_MILESTONES.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colors.borderSoft }]}>
+                      <View style={[styles.milestoneDot, reached && styles.milestoneDotActive]} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.milestoneLabel, reached && { color: colors.textPrimary }]}>{m.label}</Text>
+                        <Text style={styles.milestoneDesc}>{m.desc}</Text>
+                      </View>
+                      {reached && <Text style={{ color: colors.teal, fontSize: 14 }}>✓</Text>}
+                    </View>
+                  </FadeInUpView>
+                )
+              })}
+            </Card>
+          </>
+        </FadeInUpView>
       </ScrollView>
     </SafeAreaView>
   )

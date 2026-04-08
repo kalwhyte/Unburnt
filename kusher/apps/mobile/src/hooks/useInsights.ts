@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getInsightsSummary } from '../services/api/insights';
+import { useFocusEffect } from 'expo-router/build/exports';
 
 export function useInsights() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const res = await getInsightsSummary();
@@ -17,9 +19,15 @@ export function useInsights() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [fetchData]));
 
   return { data, loading, error, refresh: fetchData };
 }
