@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+// import AsyncStorage from '@react-native-async-storage/async-storage'
+import memoryStore from './memoryStore'
 
 interface OnboardingState {
   cigarettesPerDay: string
@@ -45,7 +46,8 @@ export const useOnboardingStore = create<OnboardingState>()(
     }),
     {
       name: 'onboarding',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => memoryStore),
+      // storage: createJSONStorage(() => AsyncStorage),
     }
   )
 )

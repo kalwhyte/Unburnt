@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CravingsController } from './cravings.controller';
 import { CravingsService } from './cravings.service';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
+  imports: [NotificationsModule],
   controllers: [CravingsController],
-  providers: [CravingsService, PrismaService],
-  exports: [CravingsService],
+  providers: [CravingsService],
 })
 export class CravingsModule {}

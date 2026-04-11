@@ -10,13 +10,22 @@ export class ProfileService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createProfile(userId: string, data: CreateProfileDto) {
-    return this.prisma.profile.create({
-      data: {
-        userId,
-        ...data,
-        quitGoal: data.quitGoal ?? QuitGoal.QUIT_NOW, 
-        cigarettesPerDay: data.cigarettesPerDay ?? 0,
-      },
+    const profileData = {
+      ...data,
+      quitGoal: data.quitGoal ?? QuitGoal.QUIT_NOW,
+      cigarettesPerDay: data.cigarettesPerDay ?? 0,
+    };
+
+    return this.prisma.profile.upsert({
+      where: { userId },
+      create: { userId, ...profileData },
+      update: profileData,
+      // data: {
+      //   userId,
+      //   ...data,
+      //   quitGoal: data.quitGoal ?? QuitGoal.QUIT_NOW, 
+      //   cigarettesPerDay: data.cigarettesPerDay ?? 0,
+      // },
     });
   }
 

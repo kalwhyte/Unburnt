@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { NotificationSenderService } from '../notifications/notification-sender.service';
 import { CravingOutcome } from '@prisma/client';
 import { CreateCravingLogDto, QueryCravingLogDto } from './dto/craving-log.dto';
 
 @Injectable()
 export class CravingsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sender: NotificationSenderService,
+  ) {}
 
   // ─── Create ───────────────────────────────────────────────────────────────
 
   async create(userId: string, dto: CreateCravingLogDto) {
-    return this.prisma.cravingLog.create({
+    const craving = await this.prisma.cravingLog.create({
       data: {
         userId,
         intensity:  dto.intensity ?? 5,
@@ -22,6 +26,45 @@ export class CravingsService {
       },
       include: { trigger: { select: { id: true, name: true } } },
     });
+
+    this.sendCravingNotification(userId, craving).catch((e) =>
+      console.error('[CravingsService] Notification failed:', e),
+    );
+
+    return craving;
+
+  }
+
+  // ─── Notification logic ───────────────────────────────────────────────────
+
+  private async sendCravingNotification(userId: string, craving: any) {
+    const { outcome, intensity, trigger } = craving;
+    const triggerName = trigger?.name ?? 'a known trigger';
+
+    switch (outcome) {
+      case CravingOutcome.RESISTED:
+        return this.sender.send(
+          userId,
+          intensity >= 8
+            ? `Intensity ${intensity}/10 — and you held it 💪`
+            : `Craving resisted ✅`,
+          intensity >= 8
+            ? `That was brutal — linked to "${triggerName}". You beat it anyway.`
+            : `You felt the urge around "${triggerName}" and didn't give in. Keep going.`,
+          'SYSTEM',
+        );
+
+      case CravingOutcome.SMOKED:
+        return this.sender.sendRelapseRecovery(userId);
+
+      case CravingOutcome.UNRESOLVED:
+        return this.sender.send(
+          userId,
+          '⏳ Craving in progress',
+          'It peaks at 3 minutes. Breathe through it — it will pass.',
+          'SYSTEM',
+        );
+    }
   }
 
   // ─── Find many (paginated + filtered) ────────────────────────────────────

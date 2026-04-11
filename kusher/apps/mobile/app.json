@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "kusher-app",
-    "slug": "kusher",
-    "scheme": "kusher",
+    "name": "Chimney",
+    "slug": "chimney",
+    "scheme": "chimney",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,6 +18,15 @@
       "bundleIdentifier": "com.kalwhyte.kusherapp"
     },
     "android": {
+      "jsEngine": "hermes",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "ACCESS_WIFI_STATE",
+        "CHANGE_NETWORK_STATE"
+      ],
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0d0f14"
@@ -30,9 +39,18 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#0d0f14",
+          "androidMode": "default"
+        }
+      ],
       "expo-asset",
       "expo-font",
-      "expo-dev-client"
+      "expo-dev-client",
+      "expo-secure-store"
     ],
     "experiments": {
       "tsconfigPaths": true
@@ -46,9 +64,9 @@
       "router": {},
       "eas": {
         "projectId": "5adb209d-7d34-49da-aec2-347e2bda460f",
-
         "buildRoot": "apps/mobile"
       }
-    }
+    },
+    "owner": "kalwhyte"
   }
 }
