@@ -37,7 +37,6 @@ export function useProgress(period: '7d' | '30d' | '3m') {
       const dailyCravings = cravingsRes.status === 'fulfilled' ? cravingsRes.value : null;
       const insights     = insightsRes.status === 'fulfilled' ? insightsRes.value : null;
 
-      // log any failures
       results.forEach((r, i) => {
         if (r.status === 'rejected') {
           console.error(`Call ${i} failed:`, r.reason?.response?.status, r.reason?.message);

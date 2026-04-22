@@ -11,6 +11,8 @@ const TECHNIQUES = [
   { id: 'delay',     icon: '⏱️', title: 'Delay & distract',      desc: 'Tell yourself: just 10 more minutes',           duration: '10 min',route: '/craving/rescue' },
 ]
 
+const useNative = Platform.OS !== 'web'
+
 export default function CravingRescueScreen() {
   const router    = useRouter()
   const fadeAnim  = useRef(new Animated.Value(0)).current
@@ -18,8 +20,8 @@ export default function CravingRescueScreen() {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 300, useNativeDriver: Platform.OS === 'web' ? false : true }),
-      Animated.spring(slideAnim, { toValue: 0, tension: 80, friction: 10, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 300, useNativeDriver: useNative }),
+      Animated.spring(slideAnim, { toValue: 0, tension: 80, friction: 10, useNativeDriver: useNative }),
     ]).start()
   }, [])
 

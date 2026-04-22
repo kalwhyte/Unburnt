@@ -1,4 +1,3 @@
-// src/components/dashboard/StreakHero.tsx
 import { View, Text, StyleSheet } from 'react-native'
 import { colors, T, radius } from '../../constants/theme'
 

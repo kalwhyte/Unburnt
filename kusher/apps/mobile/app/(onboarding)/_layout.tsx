@@ -4,7 +4,7 @@ export default function OnboardingLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0d0f14' }, animation: 'slide_from_right' }}>
       <Stack.Screen name="smoking-profile" />
-      <Stack.Screen name="smoking-habit" />
+      <Stack.Screen name="smoking-habits" />
       <Stack.Screen name="triggers" />
       <Stack.Screen name="reasons" />
       <Stack.Screen name="quit-plan" />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native'
+import { View, Text, StyleSheet, Animated, Easing, Platform } from 'react-native'
 import { colors, T } from '../../constants/theme'
 
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
   description: string
   active?: boolean
 }
+
+const useNative = Platform.OS !== 'web'
 
 export function BreathingTechnique({ name, description, active }: Props) {
   const scaleAnim = useRef(new Animated.Value(1)).current
@@ -22,7 +24,7 @@ export function BreathingTechnique({ name, description, active }: Props) {
         toValue: 1.5,
         duration: 4000,
         easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
+        useNativeDriver: useNative,
       }).start(({ finished }) => {
         if (finished) {
           // Hold: 7s
@@ -34,7 +36,7 @@ export function BreathingTechnique({ name, description, active }: Props) {
               toValue: 1,
               duration: 8000,
               easing: Easing.in(Easing.ease),
-              useNativeDriver: true,
+              useNativeDriver: useNative,
             }).start(({ finished }) => {
               if (finished) runAnimation()
             })

@@ -14,16 +14,20 @@ const getBaseUrl = () => {
 };
 
 export const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000",
+  baseURL:   getBaseUrl(),
+
+  //   ? 'http://192.168.1.20:3000'  // ✅ machine's IP — works on physical device
+  //   : 'https://simple-launder-animal.ngrok-free.dev',
+  // baseURL: process.env.EXPO_PUBLIC_API_URL || "https://localhost:3000",
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // }
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = useAuthStore.getState().token;
-
-  console.log('token', token)
   if (token) {
     config.headers.set('Authorization', `Bearer ${token}`);
   }
-
   return config;
 });

@@ -71,10 +71,6 @@ export class UsersController {
    */
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    // const existing = await this.usersService.findById(id);
-    // if (!existing) {
-    //   throw new NotFoundException(`User with id ${id} not found`);
-    // }
     console.log('DTO received:', updateUserDto);
     return this.usersService.update(
       id,

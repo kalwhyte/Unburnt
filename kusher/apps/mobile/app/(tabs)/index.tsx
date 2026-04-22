@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Animated, Dimensions } from 'react-native'
+import React, { use, useEffect, useRef } from 'react'
+import { View, Text, ScrollView, TouchableOpacity, Animated, Dimensions, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import * as Haptics from 'expo-haptics'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,6 +11,8 @@ import { CravingSOS } from '@/components/rescue/CravingSOS'
 import { s } from './styles'
 import { colors } from "@/constants/theme"
 import { useAuthStore } from '@/store/useAuthStore'
+
+const useNative = Platform.OS !== 'web'
 
 Dimensions.get('window')
 
@@ -25,13 +27,13 @@ function FadeInUpView({ children, delay = 0, style }: any) {
         toValue: 1,
         duration: 600,
         delay,
-        useNativeDriver: true,
+        useNativeDriver: useNative,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 600,
         delay,
-        useNativeDriver: true,
+        useNativeDriver: useNative,
       }),
     ]).start()
   }, [])

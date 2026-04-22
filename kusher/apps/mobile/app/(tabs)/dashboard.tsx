@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Pressable, RefreshControl, Animated, Dimensions } from 'react-native'
+import React, { useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Animated, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import Card from '../../src/components/common/Card'
 import { useAuthStore } from '../../src/store/useAuthStore'
 import { useDashboardStats } from '../../src/hooks/useDashboardStats'
+import { Badge } from '@/components/common/Badge'
+
+const useNative = Platform.OS !== 'web'
 
 const HEALTH_MILESTONES = [
   { hours: 0.33, label: '20 minutes', desc: 'Heart rate & blood pressure normalize' },
@@ -41,13 +44,13 @@ function FadeInUpView({ children, delay = 0, style }: any) {
         toValue: 1,
         duration: 600,
         delay,
-        useNativeDriver: true,
+        useNativeDriver: useNative,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 600,
         delay,
-        useNativeDriver: true,
+        useNativeDriver: useNative,
       }),
     ]).start()
   }, [])
@@ -86,6 +89,8 @@ function ScaleInView({ children, delay = 0 }: any) {
     </Animated.View>
   )
 }
+
+
 export default function DashboardScreen() {
   const router = useRouter()
   const { user } = useAuthStore()
@@ -118,6 +123,7 @@ export default function DashboardScreen() {
             <Text style={styles.streakLabel}>Current streak</Text>
             <Text style={styles.streakValue}>{streak ?? 0}</Text>
             <Text style={styles.streakUnit}>days smoke-free</Text>
+            <Badge label="Keep it up!" variant="success" size="sm" />
           </Card>
         </ScaleInView>
 

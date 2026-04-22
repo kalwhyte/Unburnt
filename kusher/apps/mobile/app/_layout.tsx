@@ -10,16 +10,18 @@ import { NotificationProvider } from '../src/providers/NotificationProvider'
 import { AuthProvider } from '../src/providers/AuthProvider'
 import { useNotificationFeed } from '../src/hooks/useNotificationObserver'
 import { View, ActivityIndicator } from 'react-native'
+import { storage } from '@/store/useAuthStore'
+
 
 
 export default function RootLayout() {
   const router = useRouter();
-  const segments = useSegments();
+  const segments = useSegments(); 
   const navigationRef = useRef(false);
   
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasHydrated = useAuthStore((state) => state._hasHydrated);
-
+  const hasCompletedOnboarding = useAuthStore((state) => state.hasCompletedOnboarding);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -31,13 +33,23 @@ export default function RootLayout() {
     if (!isAuthenticated && !inOnboarding && !inAuth) {
       navigationRef.current = true;
       router.replace('/(auth)/login');
+      return;
     }
 
+    // Logged in + finished onboarding → skip to dashboard
+    if (isAuthenticated && hasCompletedOnboarding && (inOnboarding || inAuth)) {
+      router.replace('/(tabs)/dashboard');
+      return;
+    }
+
+    // Logged in + NOT finished onboarding → skip to onboarding
     if (isAuthenticated && (inOnboarding || inAuth)) {
       navigationRef.current = true;
-      router.replace('/(tabs)/dashboard');
+      router.replace('/(onboarding)/welcome');
+      return;
     }
-  }, [hasHydrated, isAuthenticated, segments[0]]);
+
+  }, [hasHydrated, isAuthenticated, hasCompletedOnboarding]);
 
   useEffect(() => {
     navigationRef.current = false;

@@ -20,7 +20,6 @@ export function useLogSmoking() {
         mood:       payload.feeling,
         note:       payload.notes,
         loggedAt:   new Date().toISOString(),
-        // context and regret have no DTO field yet — add them or drop them
       });
       triggerDashboardRefresh();
     } finally {

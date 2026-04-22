@@ -5,9 +5,9 @@
     "scheme": "chimney",
     "version": "1.0.0",
     "orientation": "portrait",
+    "newArchEnabled": true,
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -18,15 +18,18 @@
       "bundleIdentifier": "com.kalwhyte.kusherapp"
     },
     "android": {
-      "jsEngine": "hermes",
       "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "ACCESS_WIFI_STATE",
+        "CHANGE_NETWORK_STATE",
         "INTERNET",
         "ACCESS_NETWORK_STATE",
         "RECEIVE_BOOT_COMPLETED",
         "ACCESS_WIFI_STATE",
         "CHANGE_NETWORK_STATE"
       ],
-      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0d0f14"
@@ -42,7 +45,6 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
           "color": "#0d0f14",
           "androidMode": "default"
         }
@@ -55,18 +57,19 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "packagerOpts": {
-      "projectRoots": [
-        "./"
-      ]
-    },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "5adb209d-7d34-49da-aec2-347e2bda460f",
-        "buildRoot": "apps/mobile"
+        "buildRoot": "apps/mobile",
+        "projectId": "584aec1c-b2a2-400c-9afc-efe9ad89ed92"
       }
     },
-    "owner": "kalwhyte"
+    "owner": "kalwhyte",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/584aec1c-b2a2-400c-9afc-efe9ad89ed92"
+    }
   }
 }

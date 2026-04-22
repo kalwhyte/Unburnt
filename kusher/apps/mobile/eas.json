@@ -6,7 +6,7 @@
   "build": {
     "development": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:3000"
+        "EXPO_PUBLIC_API_URL": "https://simple-launder-animal.ngrok-free.dev"
       },
       "developmentClient": true,
       "distribution": "internal"
@@ -16,7 +16,7 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:3000"
+        "EXPO_PUBLIC_API_URL": "https://simple-launder-animal.ngrok-free.dev"
       },
       "autoIncrement": true
     }

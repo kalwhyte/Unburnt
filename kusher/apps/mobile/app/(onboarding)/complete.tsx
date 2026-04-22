@@ -1,38 +1,41 @@
-
 import React, { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, Animated } from 'react-native'
+import { View, Text, StyleSheet, Animated, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
 import Button from '../../src/components/common/Button'
 import { useOnboardingStore } from '../../src/store/onboardingStore'
+import { useAuthStore } from '../../src/store/useAuthStore'
 import { api } from '@/services/api/client'
+import { Badge } from '@/components/common/Badge'
+
+const useNative = Platform.OS !== 'web'
 
 const COMMITMENTS = [
-  '✓ Your triggers are mapped',
-  '✓ Your reasons are saved',
-  '✓ Your quit plan is set',
-  '✓ Craving rescue is ready',
+  { text: 'Your triggers are mapped', badge: 'Ready' },
+  { text: 'Your reasons are saved', badge: 'Saved' },
+  { text: 'Your quit plan is set', badge: 'Active' },
+  { text: 'Craving rescue is ready', badge: 'Live' },
 ]
+
 
 export default function OnboardingCompleteScreen() {
   const router  = useRouter()
   const markComplete = useOnboardingStore((s) => s.markComplete)
   const fadeAnim  = useRef(new Animated.Value(0)).current
   const scaleAnim = useRef(new Animated.Value(0.8)).current
+  const setHasCompletedOnboarding = useAuthStore((s) => s.setHasCompletedOnboarding)
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 500, useNativeDriver: true }),
-      Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 500, useNativeDriver: useNative }),
+      Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: useNative }),
     ]).start()
   }, [])
 
   const handleStart = async () => {
     try {
       const store = useOnboardingStore.getState()
-      
-      // create profile from onboarding data
       await api.put('/profiles/me/init', {
         cigarettesPerDay: parseInt(store.cigarettesPerDay) || 10,
         yearsSmoking:     parseInt(store.yearsSmoked) || 1,
@@ -42,12 +45,11 @@ export default function OnboardingCompleteScreen() {
                             : new Date(Date.now() + 7 * 86400000).toISOString(),
       })
 
-      await markComplete()
-      router.replace('/(tabs)/dashboard')
     } catch (err) {
       console.error('Failed to create profile', err)
       // still navigate even if profile creation fails
       await markComplete()
+      setHasCompletedOnboarding(true)
       router.replace('/(tabs)/dashboard')
     }
   }
@@ -62,13 +64,14 @@ export default function OnboardingCompleteScreen() {
 
           <Text style={styles.heading}>You're all set!</Text>
           <Text style={styles.sub}>
-            Your personalised quit plan is ready. The journey starts now — and we're with you every step.
+            Your personalized quit plan is ready. The journey starts now — and we're with you every step.
           </Text>
 
           <View style={styles.commitmentList}>
             {COMMITMENTS.map((c) => (
-              <View key={c} style={styles.commitmentItem}>
-                <Text style={styles.commitmentText}>{c}</Text>
+              <View key={c.text} style={styles.commitmentItem}>
+                <Text style={styles.commitmentText}>✓ {c.text}</Text>
+                <Badge label={c.badge} variant="success" size="sm" />
               </View>
             ))}
           </View>
@@ -76,7 +79,7 @@ export default function OnboardingCompleteScreen() {
           <View style={styles.statCard}>
             <Text style={styles.statHeading}>Your first milestone</Text>
             <Text style={styles.statValue}>20 minutes</Text>
-            <Text style={styles.statDesc}>After your last cigarette, your heart rate and blood pressure will already start to normalise.</Text>
+            <Text style={styles.statDesc}>After your last cigarette, your heart rate and blood pressure will already start to normalize.</Text>
           </View>
         </Animated.View>
 
@@ -96,7 +99,7 @@ const styles = StyleSheet.create({
   heading:          { ...T.h1, color: colors.textPrimary, textAlign: 'center', marginBottom: spacing.sm, fontSize: 28 },
   sub:              { ...T.body, color: colors.textMuted, textAlign: 'center', lineHeight: 22, marginBottom: spacing.xl },
   commitmentList:   { gap: spacing.sm, marginBottom: spacing.xl },
-  commitmentItem:   { backgroundColor: colors.tealBg, borderWidth: 0.5, borderColor: colors.tealDark, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+  commitmentItem:   { backgroundColor: colors.tealBg, borderWidth: 0.5, borderColor: colors.tealDark, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   commitmentText:   { ...T.bodySmall, color: colors.tealLight },
   statCard:         { backgroundColor: colors.surface, borderWidth: 0.5, borderColor: colors.border, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.xl },
   statHeading:      { ...T.captionMedium, color: colors.textMuted, letterSpacing: 0.4, marginBottom: spacing.xs },

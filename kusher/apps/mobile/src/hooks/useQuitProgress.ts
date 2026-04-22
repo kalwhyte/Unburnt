@@ -1,12 +1,9 @@
-// ─────────────────────────────────────────────
-// src/hooks/useQuitProgress.ts
-// ─────────────────────────────────────────────
 export interface HealthMilestone {
   label: string
   description: string
-  timeMs: number       // time from quit date in ms
+  timeMs: number
   completed: boolean
-  progress?: number    // 0-1 for in-progress milestones
+  progress?: number
 }
 
 const MILESTONES_DEF = [

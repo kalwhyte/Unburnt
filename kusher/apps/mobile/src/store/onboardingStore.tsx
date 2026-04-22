@@ -1,8 +1,23 @@
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
+import { createJSONStorage, persist, StateStorage } from 'zustand/middleware'
 // import AsyncStorage from '@react-native-async-storage/async-storage'
 import memoryStore from './memoryStore'
+import { createMMKV } from 'react-native-mmkv'
 
+export const storage = createMMKV()
+
+const zustandStorage: StateStorage = {
+  setItem: (name, value) => {
+    return storage.set(name, value);
+  },
+  getItem: (name) => {
+    const value = storage.getString(name);
+    return value ?? null;
+  },
+  removeItem: (name) => {
+    return storage.remove(name);
+  },
+};
 interface OnboardingState {
   cigarettesPerDay: string
   yearsSmoked: string
@@ -46,7 +61,7 @@ export const useOnboardingStore = create<OnboardingState>()(
     }),
     {
       name: 'onboarding',
-      storage: createJSONStorage(() => memoryStore),
+      storage: createJSONStorage(() => zustandStorage),
       // storage: createJSONStorage(() => AsyncStorage),
     }
   )

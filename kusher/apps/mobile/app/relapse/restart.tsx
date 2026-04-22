@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import { View, Text, StyleSheet, Animated } from 'react-native'
+import { View, Text, StyleSheet, Animated, Platform} from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
@@ -12,6 +12,8 @@ const COMMITMENTS = [
   { icon: '🆘', text: 'Craving rescue is always one tap away' },
 ]
 
+const useNative = Platform.OS !== 'web'
+
 export default function RestartScreen() {
   const router    = useRouter()
   const fadeAnim  = useRef(new Animated.Value(0)).current
@@ -19,8 +21,8 @@ export default function RestartScreen() {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 600, useNativeDriver: useNative }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: useNative }),
     ]).start()
   }, [])
 

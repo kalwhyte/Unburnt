@@ -1,93 +1,5 @@
-// import React, { useState, useEffect, useRef } from 'react'
-// import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native'
-// import { useRouter } from 'expo-router'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-// import { colors, T } from '../../src/constants/theme'
-
-// export default function BreathingScreen() {
-//   const router = useRouter()
-//   const [phase, setPhase] = useState<'Inhale' | 'Hold' | 'Exhale'>('Inhale')
-//   const [counter, setCounter] = useState(4)
-//   const scaleAnim = useRef(new Animated.Value(1)).current
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCounter((prev) => {
-//         if (prev > 1) return prev - 1
-        
-//         // Switch phases
-//         if (phase === 'Inhale') {
-//           setPhase('Hold')
-//           return 4
-//         } else if (phase === 'Hold') {
-//           setPhase('Exhale')
-//           return 4
-//         } else {
-//           setPhase('Inhale')
-//           return 4
-//         }
-//       })
-//     }, 1000)
-
-//     return () => clearInterval(timer)
-//   }, [phase])
-
-//   useEffect(() => {
-//     if (phase === 'Inhale') {
-//       Animated.timing(scaleAnim, {
-//         toValue: 1.5,
-//         duration: 4000,
-//         useNativeDriver: true,
-//       }).start()
-//     } else if (phase === 'Exhale') {
-//       Animated.timing(scaleAnim, {
-//         toValue: 1,
-//         duration: 4000,
-//         useNativeDriver: true,
-//       }).start()
-//     }
-//   }, [phase])
-
-//   return (
-//     <SafeAreaView style={s.container}>
-//       <View style={s.header}>
-//         <TouchableOpacity onPress={() => router.back()}>
-//           <Text style={s.closeText}>Cancel</Text>
-//         </TouchableOpacity>
-//       </View>
-
-//       <View style={s.content}>
-//         <Text style={s.instruction}>{phase}</Text>
-//         <Text style={s.counter}>{counter}</Text>
-//         <Animated.View 
-//           style={[
-//             s.visualizer, 
-//             { transform: [{ scale: scaleAnim }] }
-//           ]}
-//         />
-//       </View>
-//     </SafeAreaView>
-//   )
-// }
-
-// const s = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: colors.bg },
-//   header: { padding: 16 },
-//   closeText: { color: colors.teal, ...T.body },
-//   content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-//   instruction: { ...T.h2, color: colors.textPrimary, marginBottom: 8 },
-//   counter: { ...T.h1, color: colors.textPrimary, marginBottom: 24 },
-//   visualizer: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     backgroundColor: colors.teal,
-//     opacity: 0.7,
-//   },
-// })
-
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
+import { View, Text, StyleSheet, Pressable, Animated, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, T, spacing, radius } from '../../src/constants/theme'
@@ -101,6 +13,8 @@ const PHASES: { phase: Phase; duration: number; label: string; instruction: stri
 ]
 
 const TOTAL_CYCLES = 4
+
+const useNative = Platform.OS !== 'web'
 
 export default function BreathingScreen() {
   const router   = useRouter()
@@ -125,13 +39,13 @@ export default function BreathingScreen() {
     animRef.current?.stop()
     if (p.phase === 'inhale') {
       animRef.current = Animated.parallel([
-        Animated.timing(scaleAnim, { toValue: 1.5, duration: p.duration, useNativeDriver: true }),
-        Animated.timing(opacAnim,  { toValue: 1,   duration: p.duration, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1.5, duration: p.duration, useNativeDriver: useNative }),
+        Animated.timing(opacAnim,  { toValue: 1,   duration: p.duration, useNativeDriver: useNative }),
       ])
     } else if (p.phase === 'exhale') {
       animRef.current = Animated.parallel([
-        Animated.timing(scaleAnim, { toValue: 1,   duration: p.duration, useNativeDriver: true }),
-        Animated.timing(opacAnim,  { toValue: 0.4, duration: p.duration, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1,   duration: p.duration, useNativeDriver: useNative }),
+        Animated.timing(opacAnim,  { toValue: 0.4, duration: p.duration, useNativeDriver: useNative }),
       ])
     } else {
       animRef.current = Animated.timing(scaleAnim, { toValue: 1.5, duration: p.duration, useNativeDriver: true })

@@ -18,11 +18,10 @@ export function useCraving() {
     try {
       await api.post('/cravings', {
         intensity: payload.intensity,
-        outcome:   payload.resisted ? 'RESISTED' : 'SMOKED', // ← boolean → enum
+        outcome:   payload.resisted ? 'RESISTED' : 'SMOKED',
         mood:      payload.mood,
         note:      payload.notes,
         loggedAt:  new Date().toISOString(),
-        // triggerId omitted — it must be a UUID, label strings will cause 400
       });
       triggerDashboardRefresh();
     } catch (error) {

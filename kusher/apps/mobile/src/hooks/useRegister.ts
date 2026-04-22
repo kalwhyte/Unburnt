@@ -16,7 +16,7 @@ export function useRegister() {
       setError("");
       const data = await registerApi(payload);
       if (data.access_token) {
-        useOnboardingStore.getState().reset(); // Clear onboarding data on new registration
+        useOnboardingStore.getState().reset();
         setAuth(data.user, data.access_token);
         router.replace('/(onboarding)/welcome');
       }

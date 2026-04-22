@@ -39,8 +39,9 @@ async function bootstrap() {
     next();
   });
 
-  const port = configService.get<number>('app.port') || 3000;
-  await app.listen(port);
+  const port = configService.get<number>('app.port') || 3000,
+    host = configService.get<string>('app.host') || `0.0.0.0`;
+  await app.listen(port, host);
 
   console.log('\x1b[36m');
   console.log('=======================================');
@@ -50,6 +51,8 @@ async function bootstrap() {
   console.log(chalk.green('[SUCCESS] Server started'));
   console.log(chalk.yellow('[WARN] Unauthorized request'));
   console.log(chalk.cyan('[INFO] New connection'));
+  console.log(` URL: http://192.168.1.20:${port}`);
+  console.log(` URL: http://10.0.2.2:${port}`);
   console.log(` URL: http://localhost:${port}`);
   console.log(chalk.green(' DATABASE: CONNECTED'));
   console.log(' STATUS: OPERATIONAL');
